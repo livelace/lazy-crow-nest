@@ -92,7 +92,7 @@ def get_salary_fig(data, height=450, width=480):
 def main():
     # ---------------------------------------------------------------------------------
     # Load data.
-    base_path = "/tmp/work-market"
+    base_path = "/data"
 
     df_file = "{}/common.pickle".format(base_path)
     keywords_file = "{}/common-keywords.pickle".format(base_path)
