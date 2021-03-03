@@ -89,7 +89,7 @@ def get_salary_fig(data, height=450, width=480):
     return fig
 
 
-if __name__ == "__main__":
+def main():
     # ---------------------------------------------------------------------------------
     # Load data.
     base_path = "/tmp/work-market"
@@ -129,23 +129,23 @@ if __name__ == "__main__":
                 html.Div(children=[
                     html.Div(children=[
                         dcc.Markdown("""
-                        ##### Application description: 
-                        The main purpose of this app is to give a quick overview  
-                        around labour market in Russia, specifically - computer science.  
-                        Dataset is based on publicly available information from  
-                        such sites as [hh.ru](https://hh.ru). Data gathering is performed  
-                        with help of an in-house tool - [gosquito](https://github.com/livelace/gosquito).  
-                           
-                        """),
+                            ##### Application description: 
+                            The main purpose of this app is to give a quick overview  
+                            around labour market in Russia, specifically - computer science.  
+                            Dataset is based on publicly available information from  
+                            such sites as [hh.ru](https://hh.ru). Data gathering is performed  
+                            with help of an in-house tool - [gosquito](https://github.com/livelace/gosquito).  
+
+                            """),
                     ]),
                     html.Div(children=[
                         dcc.Markdown("""
-                        ##### Dataset information:  
-                          
-                        Total cities: **{0}**&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;    
-                        Total companies: **{1}**&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;        
-                        Total vacancies: **{2}**&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;    
-                        """.format(
+                            ##### Dataset information:  
+
+                            Total cities: **{0}**&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;    
+                            Total companies: **{1}**&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;        
+                            Total vacancies: **{2}**&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;    
+                            """.format(
                             df["city"].value_counts().count(),
                             df["company"].value_counts().count(),
                             df["company"].count()
@@ -153,26 +153,26 @@ if __name__ == "__main__":
                     ], style=style),
                     html.Div(children=[
                         dcc.Markdown("""
-                        Total keywords: **{0}**&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;    
-                        Total tags: **{1}**&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  
-                        &nbsp;&nbsp;&nbsp;&nbsp;            
-                        """.format(
+                            Total keywords: **{0}**&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;    
+                            Total tags: **{1}**&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  
+                            &nbsp;&nbsp;&nbsp;&nbsp;            
+                            """.format(
                             keywords.value_counts().count(),
                             tags.value_counts().count(),
                         ))
                     ], style=style),
                     html.Div(children=[
                         dcc.Markdown("""       
-                        Filled salaries: **{0}**  
-                        Position titles: **{1}**  
-                          
-                        Period From: **{2}**    
-                        Period To:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**{3}**    
-                          
-                        Generated: **{4}**  
-                        &nbsp;  
-                        &nbsp;  
-                        """.format(
+                            Filled salaries: **{0}**  
+                            Position titles: **{1}**  
+
+                            Period From: **{2}**    
+                            Period To:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**{3}**    
+
+                            Generated: **{4}**  
+                            &nbsp;  
+                            &nbsp;  
+                            """.format(
                             salary["company"].count(),
                             df["title"].value_counts().count(),
                             date_min,
@@ -346,7 +346,6 @@ if __name__ == "__main__":
                 ])
             ])
 
-
     @app.callback(
         [
             Output("tab2-city-graph", "figure"),
@@ -450,3 +449,7 @@ if __name__ == "__main__":
         return figs
 
     app.run_server(debug=False, dev_tools_ui=False, dev_tools_props_check=False)
+
+
+if __name__ == "__main__":
+    main()

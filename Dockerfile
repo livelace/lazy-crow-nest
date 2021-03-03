@@ -16,3 +16,7 @@ RUN             git clone --depth 1 --branch "$VERSION" "$LCN_URL" "$LCN_TEMP" &
                 pip install --user -r "requirements.txt" && \
                 pip install --user . && \
                 rm -rf "$LCN_TEMP"
+
+WORKDIR         "/home/lcn"
+
+CMD             ["/home/lcn/.local/bin/lazy-crow-nest"]
