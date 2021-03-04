@@ -397,7 +397,7 @@ def main():
     )
     def update_tab2_graph(*args):
         position, city, company, salary_from, salary_to, keyword_max, tag_max, start_date, end_date = args
-        data = df.copy()
+        data = df
 
         if position:
             position_escaped = re.escape(position)
