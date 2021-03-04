@@ -1,10 +1,10 @@
 # lazy-crow-nest
 
 
-***lazy-crow-nest*** ("lazy" + "crow's nest") is a Dash app for a quick overview
+***lazy-crow-nest*** ("lazy" + "[crow's nest](https://en.wikipedia.org/wiki/Crow%27s_nest)") is a [Dash](https://github.com/plotly/dash) app for a quick overview
 of job market in Russia.
 
-### Dash:
+### Dash UI:
 ![overview](assets/overview.png)
 
 
