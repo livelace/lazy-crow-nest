@@ -448,7 +448,7 @@ def main():
 
         return figs
 
-    app.run_server(debug=False, dev_tools_ui=False, dev_tools_props_check=False)
+    app.run_server(debug=False, dev_tools_ui=False, dev_tools_props_check=False, host="0.0.0.0")
 
 
 if __name__ == "__main__":
