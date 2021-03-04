@@ -102,8 +102,16 @@ def main():
     keywords: pd.Series = pd.read_pickle(keywords_file)
     tags: pd.Series = pd.read_pickle(tags_file)
 
+    # ---------------------------------------------------------------------------------
+    # Derive common variables.
+
     date_min = df["date"].min()
     date_max = df["date"].max()
+
+    if "generated" in df.attrs:
+        dataset_generated = df.attrs["generated"]
+    else:
+        dataset_generated = "unknown"
 
     salary: pd.DataFrame = df[(df["salary_from"] > 0) & (df["salary_to"] > 0)]
 
@@ -177,7 +185,7 @@ def main():
                             df["title"].value_counts().count(),
                             date_min,
                             date_max,
-                            "2021-02-03"
+                            dataset_generated
                         ))
                     ])
                 ], style=style),
