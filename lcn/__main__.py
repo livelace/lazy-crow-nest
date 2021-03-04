@@ -1,3 +1,5 @@
+import os
+
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
@@ -42,13 +44,20 @@ def get_salary_fig(data, height=450, width=480):
     if data.size > 0:
         min_from, min_to = int(data["salary_from"].min()), int(data["salary_to"].min())
         max_from, max_to = int(data["salary_from"].max()), int(data["salary_to"].max())
-        mean_from, mean_to = int(data["salary_from"].mean()), int(data["salary_to"].mean())
-        median_from, median_to = int(data["salary_from"].median()), int(data["salary_to"].median())
+
+        # Calc mean/median only for salary_from/salary_to != 0 (not set).
+        salary_filled = data[(data["salary_from"] > 0) & (data["salary_to"] > 0)]
+
+        if salary_filled.size > 0:
+            mean_from = int(salary_filled["salary_from"].mean())
+            mean_to = int(salary_filled["salary_to"].mean())
+            median_from = int(salary_filled["salary_from"].median())
+            median_to = int(salary_filled["salary_to"].median())
+        else:
+            mean_from, mean_to, median_from, median_to = 0, 0, 0, 0
     else:
-        min_from, min_to = 0, 0
-        max_from, max_to = 0, 0
-        mean_from, mean_to = 0, 0
-        median_from, median_to = 0, 0
+        min_from, min_to, max_from, max_to = 0, 0, 0, 0
+        mean_from, mean_to, median_from, median_to = 0, 0, 0, 0
 
     salary_df = pd.DataFrame({
         "Salary": [
@@ -92,11 +101,12 @@ def get_salary_fig(data, height=450, width=480):
 def main():
     # ---------------------------------------------------------------------------------
     # Load data.
-    base_path = "/data"
+    os.environ.setdefault("DATA_PATH", "/data")
+    data_path = os.environ["DATA_PATH"]
 
-    df_file = "{}/common.pickle".format(base_path)
-    keywords_file = "{}/common-keywords.pickle".format(base_path)
-    tags_file = "{}/common-tags.pickle".format(base_path)
+    df_file = "{}/common.pickle".format(data_path)
+    keywords_file = "{}/common-keywords.pickle".format(data_path)
+    tags_file = "{}/common-tags.pickle".format(data_path)
 
     df: pd.DataFrame = pd.read_pickle(df_file)
     keywords: pd.Series = pd.read_pickle(keywords_file)
@@ -139,7 +149,7 @@ def main():
                         dcc.Markdown("""
                             ##### Application description: 
                             The main purpose of this app is to give a quick overview  
-                            around labour market in Russia, specifically - computer science.  
+                            of job market in Russia, specifically - computer science.  
                             Dataset is based on publicly available information from  
                             such sites as [hh.ru](https://hh.ru). Data gathering is performed  
                             with help of an in-house tool - [gosquito](https://github.com/livelace/gosquito).  
@@ -265,7 +275,17 @@ def main():
                             id="tab2-company-input",
                             type="text",
                             placeholder="Яндекс",
-                        )
+                        ),
+                        dcc.Input(
+                            id="tab2-salary-from-input",
+                            type="number",
+                            placeholder="from 100000",
+                        ),
+                        dcc.Input(
+                            id="tab2-salary-to-input",
+                            type="number",
+                            placeholder="to 300000",
+                        ),
                     ], style=style),
                     html.Div(children=[
                         dcc.Markdown("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;")
@@ -367,6 +387,8 @@ def main():
             Input("tab2-position-input", "value"),
             Input("tab2-city-input", "value"),
             Input("tab2-company-input", "value"),
+            Input("tab2-salary-from-input", "value"),
+            Input("tab2-salary-to-input", "value"),
             Input("tab2-keyword-max-input", "value"),
             Input("tab2-tag-max-input", "value"),
             Input("tab2-date-input", "start_date"),
@@ -374,26 +396,29 @@ def main():
         ]
     )
     def update_tab2_graph(*args):
-        position, city, company, keyword_max, tag_max, start_date, end_date = args
-        data, data_with_filled_salary = df, salary
+        position, city, company, salary_from, salary_to, keyword_max, tag_max, start_date, end_date = args
+        data = df.copy()
 
         if position:
             position_escaped = re.escape(position)
-            data = df[df["title"].str.match(position_escaped, case=False)]
-            data_with_filled_salary = df[(df["title"].str.match(position_escaped, case=False))
-                                         & (df["salary_from"] > 0) & (df["salary_to"] > 0)]
+            data = data[data["title"].str.match(position_escaped, case=False)]
 
         if city:
             city_escaped = re.escape(city)
             data = data[data["city"].str.match(city_escaped, case=False)]
-            data_with_filled_salary = \
-                data_with_filled_salary[data_with_filled_salary["city"].str.match(city_escaped, case=False)]
 
         if company:
             company_escaped = re.escape(company)
             data = data[data["company"].str.match(company_escaped, case=False)]
-            data_with_filled_salary = \
-                data_with_filled_salary[data_with_filled_salary["company"].str.match(company_escaped, case=False)]
+
+        # Salary.
+        if salary_from and salary_to:
+            data = data[(data["salary_from"] >= salary_from) & (data["salary_from"] <= salary_to) &
+                        (data["salary_to"] >= salary_from) & (data["salary_to"] <= salary_to)]
+        elif salary_from:
+            data = data[data["salary_from"] >= salary_from]
+        elif salary_to:
+            data = data[data["salary_to"] <= salary_to]
 
         if start_date and end_date:
             data = data[(data["date"] >= start_date) & (data["date"] <= end_date)]
@@ -402,6 +427,7 @@ def main():
         elif end_date:
             data = data[data["date"] <= end_date]
 
+        # Resize bars if needed.
         if keyword_max and keyword_max > 10:
             keyword_height = (480 / 10) * keyword_max
             keyword_max *= -1
@@ -450,7 +476,7 @@ def main():
                 height=tag_height
             ),
             get_salary_fig(
-                data_with_filled_salary
+                data
             )
         ]
 
