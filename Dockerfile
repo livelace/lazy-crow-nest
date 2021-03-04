@@ -7,8 +7,8 @@ ENV             LCN_URL="https://github.com/livelace/lazy-crow-nest"
 RUN             mkdir -p "/data"
 
 COPY            "./lazy-crow-nest/common.pickle" "/data/common.pickle"
-COPY            "./lazy-crow-nest/keywords.pickle" "/data/keywords.pickle"
-COPY            "./lazy-crow-nest/tags.pickle" "/data/tags.pickle"
+COPY            "./lazy-crow-nest/common-keywords.pickle" "/data/common-keywords.pickle"
+COPY            "./lazy-crow-nest/common-tags.pickle" "/data/common-tags.pickle"
 
 # create user.
 RUN             useradd -m -u 1000 -s "/bin/bash" "lcn"
