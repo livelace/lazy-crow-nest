@@ -1,8 +1,8 @@
-import os
-
 import dash
+import dash_bootstrap_components as dbc
 import dash_core_components as dcc
 import dash_html_components as html
+import os
 import pandas as pd
 import plotly.express as px
 import re
@@ -10,37 +10,23 @@ import re
 from dash.dependencies import Input, Output
 
 
-def get_top_fig(data, limit, labels, title, height=450, width=480):
-    if data.size > 0:
-        x_values = data.values[limit:]
-        y_values = data.keys()[limit:]
-    else:
-        x_values = [0]
-        y_values = [0]
+def get_lang_fig(data, height=500, width=400):
+    data = data["lang"].value_counts()
 
     fig = px.bar(
         data,
-        x=x_values,
-        y=y_values,
-        labels=labels,
-        orientation="h",
+        x=data.keys(),
+        y=data.values,
+        labels={"index": "Lang", "y": "Amount"},
+        title="Vacancy Language",
         height=height,
         width=width
-    )
-
-    fig.update_layout(
-        title={
-            "text": title,
-            "x": 0.5,
-            "y": 0.95,
-            "xanchor": "center",
-            "yanchor": "top"}
     )
 
     return fig
 
 
-def get_salary_fig(data, height=450, width=480):
+def get_salary_fig(data, height=500, width=400):
     if data.size > 0:
         min_from, min_to = int(data["salary_from"].min()), int(data["salary_to"].min())
         max_from, max_to = int(data["salary_from"].max()), int(data["salary_to"].max())
@@ -81,18 +67,32 @@ def get_salary_fig(data, height=450, width=480):
         x="Salary",
         y="Money",
         color="Fork",
+        title="Salary Range",
         barmode="group",
         height=height,
         width=width
     )
 
-    fig.update_layout(
-        title={
-            "text": "Salary Range",
-            "x": 0.5,
-            "y": 0.95,
-            "xanchor": 'center',
-            "yanchor": 'top'}
+    return fig
+
+
+def get_top_fig(data, limit, labels, title, height=500, width=480):
+    if data.size > 0:
+        x_values = data.values[limit:]
+        y_values = data.keys()[limit:]
+    else:
+        x_values = [0]
+        y_values = [0]
+
+    fig = px.bar(
+        data,
+        x=x_values,
+        y=y_values,
+        labels=labels,
+        title=title,
+        orientation="h",
+        height=height,
+        width=width
     )
 
     return fig
@@ -123,20 +123,35 @@ def main():
     else:
         dataset_generated = "unknown"
 
+    default_top_limit = -15
+
     salary: pd.DataFrame = df[(df["salary_from"] > 0) & (df["salary_to"] > 0)]
 
-    style = {"display": "inline-block"}
+    default_style = {"display": "inline-block"}
+
+    tabs_style = {"height": "35px"}
+    tab_style = {
+        "borderBottom": "1px solid #d6d6d6",
+        "padding": "6px",
+    }
+
+    tab_selected_style = {
+        "borderTop": "1px solid #d6d6d6",
+        "borderBottom": "1px solid #d6d6d6",
+        "fontWeight": "bold",
+        "padding": "6px"
+    }
 
     # ---------------------------------------------------------------------------------
     # Forming Dash.
     external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"]
 
-    app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+    app = dash.Dash(__name__, external_stylesheets=[dbc.themes.SIMPLEX])
     app.layout = html.Div(children=[
         dcc.Tabs(id="tabs", value="tab1", children=[
-            dcc.Tab(label="Overview", value="tab1"),
-            dcc.Tab(label="Filtering", value="tab2"),
-        ]),
+            dcc.Tab(label="Overview", value="tab1", style=tab_style, selected_style=tab_selected_style),
+            dcc.Tab(label="Filtering", value="tab2", style=tab_style, selected_style=tab_selected_style),
+        ], style=tabs_style),
         html.Div(id='tabs-content')
     ])
 
@@ -168,7 +183,7 @@ def main():
                             df["company"].value_counts().count(),
                             df["company"].count()
                         ))
-                    ], style=style),
+                    ], style=default_style),
                     html.Div(children=[
                         dcc.Markdown("""
                             Total keywords: **{0}**&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;    
@@ -178,7 +193,7 @@ def main():
                             keywords.value_counts().count(),
                             tags.value_counts().count(),
                         ))
-                    ], style=style),
+                    ], style=default_style),
                     html.Div(children=[
                         dcc.Markdown("""       
                             Filled salaries: **{0}**  
@@ -198,62 +213,63 @@ def main():
                             dataset_generated
                         ))
                     ])
-                ], style=style),
+                ], style=default_style),
                 html.Div(children=[
                     dcc.Graph(
                         id="tab1-top-city-graph",
                         figure=get_top_fig(
                             df["city"].value_counts(ascending=True),
-                            -10,
+                            default_top_limit,
                             {"x": "Vacancy", "y": "City"},
-                            "City: Top10"
+                            "City: Top15"
                         ),
-                        style=style
+                        style=default_style
                     ),
                     dcc.Graph(
                         id="tab1-top-company-graph",
                         figure=get_top_fig(
                             df["company"].value_counts(ascending=True),
-                            -10,
+                            default_top_limit,
                             {"x": "Vacancy", "y": "Company"},
-                            "Company: Top10"
+                            "Company: Top15"
                         ),
-                        style=style
+                        style=default_style
                     ),
                     dcc.Graph(
                         id="tab1-top-position-graph",
                         figure=get_top_fig(
                             df["title"].value_counts(ascending=True),
-                            -10,
+                            default_top_limit,
                             {"x": "Amount", "y": "Position"},
-                            "Position: Top10"
+                            "Position: Top15"
                         ),
-                        style=style
+                        style=default_style
                     )
-                ], style=style),
+                ], style=default_style),
                 html.Div(children=[
                     dcc.Graph(
                         id="tab1-top-keyword-graph",
                         figure=get_top_fig(
                             keywords.value_counts(ascending=True),
-                            -10,
+                            default_top_limit,
                             {"x": "Amount", "y": "Keyword"},
-                            "Keyword: Top10"
+                            "Keyword: Top15"
                         ),
-                        style=style
+                        style=default_style
                     ),
                     dcc.Graph(
                         id="tab1-top-tag-graph",
                         figure=get_top_fig(
                             tags.value_counts(ascending=True),
-                            -10,
+                            default_top_limit,
                             {"x": "Amount", "y": "Tag"},
-                            "Tag: Top10"
+                            "Tag: Top15"
                         ),
-                        style=style
+                        style=default_style
                     ),
-                    dcc.Graph(id="tab1-salary-range", figure=get_salary_fig(salary), style=style)
-                ], style=style)
+                    dcc.Graph(id="tab1-top-lang", figure=get_lang_fig(df), style=default_style),
+                    dcc.Graph(id="tab1-salary-range", figure=get_salary_fig(salary), style=default_style)
+                ], style=default_style)
             ])
 
         elif tab == 'tab2':
@@ -286,10 +302,10 @@ def main():
                             type="number",
                             placeholder="to 300000",
                         ),
-                    ], style=style),
+                    ], style=default_style),
                     html.Div(children=[
                         dcc.Markdown("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;")
-                    ], style=style),
+                    ], style=default_style),
                     html.Div(children=[
                         html.H5("Limit options:"),
                         dcc.Input(
@@ -302,10 +318,10 @@ def main():
                             type="number",
                             placeholder="Tag"
                         ),
-                    ], style=style),
+                    ], style=default_style),
                     html.Div(children=[
                         dcc.Markdown("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;")
-                    ], style=style),
+                    ], style=default_style),
                     html.Div(children=[
                         html.H5("Date options:"),
                         dcc.DatePickerRange(
@@ -315,38 +331,38 @@ def main():
                             min_date_allowed=date_min.date(),
                             max_date_allowed=date_max.date()
                         )
-                    ], style=style)
+                    ], style=default_style)
                 ]),
                 html.Div(children=[
                     dcc.Graph(
                         id="tab2-city-graph",
                         figure=get_top_fig(
                             df["city"].value_counts(ascending=True),
-                            -10,
+                            default_top_limit,
                             {"x": "Amount", "y": "City"},
                             "City"
                         ),
-                        style=style
+                        style=default_style
                     ),
                     dcc.Graph(
                         id="tab2-company-graph",
                         figure=get_top_fig(
                             df["company"].value_counts(ascending=True),
-                            -10,
+                            default_top_limit,
                             {"x": "Amount", "y": "Company"},
                             "Company"
                         ),
-                        style=style
+                        style=default_style
                     ),
                     dcc.Graph(
                         id="tab2-position-graph",
                         figure=get_top_fig(
                             df["title"].value_counts(ascending=True),
-                            -10,
+                            default_top_limit,
                             {"x": "Amount", "y": "Position"},
                             "Position"
                         ),
-                        style=style
+                        style=default_style
                     )
                 ]),
                 html.Div(children=[
@@ -354,23 +370,23 @@ def main():
                         id="tab2-keyword-graph",
                         figure=get_top_fig(
                             keywords.value_counts(ascending=True),
-                            -10,
+                            default_top_limit,
                             {"x": "Amount", "y": "Keyword"},
-                            "Keyword: Top10"
+                            "Keyword: Top15"
                         ),
-                        style=style
+                        style=default_style
                     ),
                     dcc.Graph(
                         id="tab2-tag-graph",
                         figure=get_top_fig(
                             tags.value_counts(ascending=True),
-                            -10,
+                            default_top_limit,
                             {"x": "Amount", "y": "Tag"},
-                            "Tag: Top10"
+                            "Tag: Top15"
                         ),
-                        style=style
+                        style=default_style
                     ),
-                    dcc.Graph(id="tab2-salary-range", figure=get_salary_fig(salary), style=style)
+                    dcc.Graph(id="tab2-salary-range", figure=get_salary_fig(salary), style=default_style)
                 ])
             ])
 
@@ -428,36 +444,36 @@ def main():
             data = data[data["date"] <= end_date]
 
         # Resize bars if needed.
-        if keyword_max and keyword_max > 10:
-            keyword_height = (480 / 10) * keyword_max
+        if keyword_max and keyword_max > 15:
+            keyword_height = (480 / 15) * keyword_max
             keyword_max *= -1
         else:
             keyword_height = 480
-            keyword_max = -10
+            keyword_max = default_top_limit
 
-        if tag_max and tag_max > 10:
-            tag_height = (480 / 10) * tag_max
+        if tag_max and tag_max > 15:
+            tag_height = (480 / 15) * tag_max
             tag_max *= -1
         else:
             tag_height = 480
-            tag_max = -10
+            tag_max = default_top_limit
 
         figs = [
             get_top_fig(
                 data["city"].value_counts(ascending=True),
-                -10,
+                default_top_limit,
                 {"x": "Amount", "y": "City"},
                 "City"
             ),
             get_top_fig(
                 data["company"].value_counts(ascending=True),
-                -10,
+                default_top_limit,
                 {"x": "Amount", "y": "Company"},
                 "Company"
             ),
             get_top_fig(
                 data["title"].value_counts(ascending=True),
-                -10,
+                default_top_limit,
                 {"x": "Amount", "y": "Position"},
                 "Position"
             ),
