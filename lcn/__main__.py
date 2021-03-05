@@ -17,7 +17,7 @@ def get_lang_fig(data, height=500, width=400):
         data,
         x=data.keys(),
         y=data.values,
-        labels={"index": "Lang", "y": "Amount"},
+        labels={"index": "Language", "y": "Amount"},
         title="Vacancy Language",
         height=height,
         width=width
@@ -66,9 +66,9 @@ def get_salary_fig(data, height=500, width=400):
         salary_df,
         x="Salary",
         y="Money",
+        barmode="group",
         color="Fork",
         title="Salary Range",
-        barmode="group",
         height=height,
         width=width
     )
@@ -89,8 +89,8 @@ def get_top_fig(data, limit, labels, title, height=500, width=480):
         x=x_values,
         y=y_values,
         labels=labels,
-        title=title,
         orientation="h",
+        title=title,
         height=height,
         width=width
     )
