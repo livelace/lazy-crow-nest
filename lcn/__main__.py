@@ -9,6 +9,8 @@ import re
 
 from dash.dependencies import Input, Output
 from datetime import datetime
+
+from plotly.graph_objs import Layout
 from zeep import Client
 
 
@@ -43,6 +45,8 @@ def get_top_horizontal_fig(data, limit, labels, title, height=500, width=480):
         width=width
     )
 
+    fig.update_xaxes(tickformat="d")
+
     return fig
 
 
@@ -56,6 +60,8 @@ def get_top_vertical_fig(data, labels, title, height=500, width=400):
         height=height,
         width=width
     )
+
+    fig.update_xaxes(tickformat="d")
 
     return fig
 
@@ -106,6 +112,8 @@ def get_salary_fig(data, height=500, width=400):
         height=height,
         width=width
     )
+
+    fig.update_xaxes(tickformat="d")
 
     return fig
 
@@ -171,6 +179,7 @@ def main():
         dcc.Tabs(id="tabs", value="tab1", children=[
             dcc.Tab(label="Overview", value="tab1", style=tab_style, selected_style=tab_selected_style),
             dcc.Tab(label="Filtering", value="tab2", style=tab_style, selected_style=tab_selected_style),
+            dcc.Tab(label="Timeline", value="tab3", style=tab_style, selected_style=tab_selected_style),
         ], style=tabs_style),
         html.Div(id='tabs-content')
     ])
@@ -183,7 +192,7 @@ def main():
                     html.Div(children=[
                         dcc.Markdown("""
                             ##### Application description: 
-                            The main purpose of this app is to give a quick overview  
+                            The main purpose of [this app](https://github.com/livelace/lazy-crow-nest) is to give a quick overview  
                             of job market in Russia, specifically - computer science.  
                             Dataset is based on publicly available information from  
                             such sites as [hh.ru](https://hh.ru). Data gathering is performed  
@@ -463,6 +472,72 @@ def main():
                 ])
             ])
 
+        elif tab == 'tab3':
+            return html.Div(children=[
+                dcc.Graph(
+                    id="tab2-timeline-year-graph",
+                    figure=get_top_vertical_fig(
+                        df["year"].value_counts(ascending=True),
+                        {"index": "Year", "y": "Amount"},
+                        "Per Year",
+                        width=500
+                    ),
+                    style=default_style
+                ),
+                dcc.Graph(
+                    id="tab2-timeline-month-graph",
+                    figure=get_top_vertical_fig(
+                        df["month"].value_counts(ascending=True),
+                        {"index": "Month", "y": "Amount"},
+                        "Per Month",
+                        width=500
+                    ),
+                    style=default_style
+                ),
+                dcc.Graph(
+                    id="tab2-timeline-day-graph",
+                    figure=get_top_vertical_fig(
+                        df["day"].value_counts(ascending=True),
+                        {"index": "Month Day", "y": "Amount"},
+                        "Per Day",
+                        width=500
+                    ),
+                    style=default_style
+                ),
+                dcc.Graph(
+                    id="tab2-timeline-weekday-graph",
+                    figure=get_top_vertical_fig(
+                        df["week_day"].value_counts(ascending=True),
+                        {"index": "Week Day", "y": "Amount"},
+                        "Per Week Day",
+                        width=500
+                    ),
+                    style=default_style
+                ),
+                dcc.Graph(
+                    id="tab2-timeline-hour-graph",
+                    figure=get_top_vertical_fig(
+                        df["hour"].value_counts(ascending=True),
+                        {"index": "Hour", "y": "Amount"},
+                        "Per Hour",
+                        width=500
+                    ),
+                    style=default_style
+                ),
+                dcc.Graph(
+                    id="tab2-timeline-minute-graph",
+                    figure=get_top_vertical_fig(
+                        df["minute"].value_counts(ascending=True),
+                        {"index": "Minute", "y": "Amount"},
+                        "Per Minute",
+                        width=500
+                    ),
+                    style=default_style
+                )
+            ])
+
+    # ---------------------------------------------------------------------------------
+    # Callback functions.
     @app.callback(
         [
             Output("tab2-city-graph", "figure"),
