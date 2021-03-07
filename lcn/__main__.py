@@ -143,16 +143,12 @@ def main():
 
     default_top_limit = -15
 
-    exchange_rates = get_exchange_rates()
-
-    salary_full: pd.DataFrame = df[(df["salary_from"] > 0) & (df["salary_to"] > 0)]
+    salary_full_amount = df[(df["salary_from"] > 0) & (df["salary_to"] > 0)]["company"].count()
     salary_from_amount = df[(df["salary_from"] > 0) & (df["salary_to"] == 0)]["company"].count()
     salary_to_amount = df[(df["salary_from"] == 0) & (df["salary_to"] > 0)]["company"].count()
 
-    currency_style = {
-        "width": "50px"
-    }
-
+    currency_style = {"width": "50px"}
+    date_style = {"height": "30px"}
     default_style = {"display": "inline-block"}
 
     tabs_style = {"height": "35px"}
@@ -237,7 +233,7 @@ def main():
                             &nbsp;  
                             &nbsp;  
                             """.format(
-                            salary_full["company"].count(),
+                            salary_full_amount,
                             salary_from_amount,
                             salary_to_amount,
                             df["title"].value_counts().count(),
@@ -314,7 +310,7 @@ def main():
                     ),
                     dcc.Graph(
                         id="tab1-salary-range",
-                        figure=get_salary_fig(salary_full, width=350),
+                        figure=get_salary_fig(df, width=350),
                         style=default_style
                     ),
                     dcc.Graph(
@@ -402,11 +398,9 @@ def main():
                         html.H5("Date:"),
                         dcc.DatePickerRange(
                             id="tab2-date-input",
-                            start_date=date_min.date(),
-                            end_date=date_max.date(),
                             min_date_allowed=date_min.date(),
                             max_date_allowed=date_max.date(),
-                            style={"height": "30px"}
+                            style=date_style
                         )
                     ], style=default_style)
                 ]),
@@ -465,7 +459,7 @@ def main():
                     ),
                     dcc.Graph(
                         id="tab2-salary-range",
-                        figure=get_salary_fig(salary_full),
+                        figure=get_salary_fig(df),
                         style=default_style
                     )
                 ])
