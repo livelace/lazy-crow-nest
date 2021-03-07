@@ -8,7 +8,7 @@ setup(
     author_email="o.popov@livelace.ru",
     license="BSD",
     packages=find_packages(),
-include_package_data=True,
+    include_package_data=True,
     entry_points={
         "console_scripts": [
             "lazy-crow-nest=lcn.__main__:main"
