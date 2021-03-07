@@ -503,8 +503,10 @@ def main():
             company_escaped = re.escape(company)
             data = data[data["company"].str.match(company_escaped, case=False)]
 
-        print(salary_currency)
         # Salary.
+        if not salary_currency:
+            salary_currency = "RUB"
+
         if salary_from and salary_to:
             data = data[(data["salary_from"] >= salary_from) & (data["salary_from"] <= salary_to) &
                         (data["salary_to"] >= salary_from) & (data["salary_to"] <= salary_to) &
