@@ -4,7 +4,14 @@
 ***lazy-crow-nest*** ("lazy" + "[crow's nest](https://en.wikipedia.org/wiki/Crow%27s_nest)") is a [Dash](https://github.com/plotly/dash) app for a quick overview
 of job market in Russia.
 
-### Dash UI:
+### Features:
+
+* 24/7 new data fetching.
+* Weekly [Spark](https://spark.apache.org/) task for clean, extract, enrich data. Weekly [Docker](https://hub.docker.com/r/livelace/lazy-crow-nest) image.
+* Different metrics: city, title, company, salary etc.
+* Filtering by different parameters.
+
+### Dash:
 ![overview](assets/overview.png)
 
 
