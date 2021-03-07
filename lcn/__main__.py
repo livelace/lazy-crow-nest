@@ -599,17 +599,17 @@ def main():
 
         # Resize bars if needed.
         if keyword_max and keyword_max > 15:
-            keyword_height = (480 / 15) * keyword_max
+            keyword_height = (500 / 15) * keyword_max
             keyword_max *= -1
         else:
-            keyword_height = 480
+            keyword_height = 500
             keyword_max = default_top_limit
 
         if tag_max and tag_max > 15:
-            tag_height = (480 / 15) * tag_max
+            tag_height = (500 / 15) * tag_max
             tag_max *= -1
         else:
-            tag_height = 480
+            tag_height = 500
             tag_max = default_top_limit
 
         figs = [
