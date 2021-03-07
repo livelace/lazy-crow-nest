@@ -368,7 +368,6 @@ def main():
                             type="text",
                             list="currencies",
                             placeholder="RUB",
-                            value="RUB",
                             style=currency_style
                         ),
                     ], style=default_style),
@@ -379,12 +378,12 @@ def main():
                         html.H5("Limits:"),
                         dcc.Input(
                             id="tab2-keyword-max-input",
-                            type="text",
+                            type="number",
                             placeholder="Keyword"
                         ),
                         dcc.Input(
                             id="tab2-tag-max-input",
-                            type="text",
+                            type="number",
                             placeholder="Tag"
                         ),
                     ], style=default_style),
