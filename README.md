@@ -7,7 +7,7 @@ of job market in Russia.
 ### Features:
 
 * 24/7 new data fetching.
-* Weekly [Spark](https://spark.apache.org/) task for clean, extract, enrich data. Weekly [Docker](https://hub.docker.com/r/livelace/lazy-crow-nest) image.
+* Regular [Spark](https://spark.apache.org/) task for clean, extract, enrich data etc. Weekly [Docker](https://hub.docker.com/r/livelace/lazy-crow-nest) image.
 * Different metrics: city, title, company, salary etc.
 * Filtering by different parameters.
 
