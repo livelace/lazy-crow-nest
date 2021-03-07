@@ -8,17 +8,51 @@ import plotly.express as px
 import re
 
 from dash.dependencies import Input, Output
+from datetime import datetime
+from zeep import Client
 
 
-def get_lang_fig(data, height=500, width=400):
-    data = data["lang"].value_counts()
+def get_exchange_rates():
+    result = {}
 
+    client = Client("https://www.cbr.ru/DailyInfoWebServ/DailyInfo.asmx?wsdl")
+    response = client.service.GetCursOnDate(datetime.today())
+
+    for i in response["_value_1"]["_value_1"]:
+        result[i["ValuteCursOnDate"]["VchCode"]] = float(i["ValuteCursOnDate"]["Vcurs"] / i["ValuteCursOnDate"]["Vnom"])
+
+    return result
+
+
+def get_top_horizontal_fig(data, limit, labels, title, height=500, width=480):
+    if data.size > 0:
+        x_values = data.values[limit:]
+        y_values = data.keys()[limit:]
+    else:
+        x_values = [0]
+        y_values = [0]
+
+    fig = px.bar(
+        data,
+        x=x_values,
+        y=y_values,
+        labels=labels,
+        orientation="h",
+        title=title,
+        height=height,
+        width=width
+    )
+
+    return fig
+
+
+def get_top_vertical_fig(data, labels, title, height=500, width=400):
     fig = px.bar(
         data,
         x=data.keys(),
         y=data.values,
-        labels={"index": "Language", "y": "Amount"},
-        title="Vacancy Language",
+        labels=labels,
+        title=title,
         height=height,
         width=width
     )
@@ -76,28 +110,6 @@ def get_salary_fig(data, height=500, width=400):
     return fig
 
 
-def get_top_fig(data, limit, labels, title, height=500, width=480):
-    if data.size > 0:
-        x_values = data.values[limit:]
-        y_values = data.keys()[limit:]
-    else:
-        x_values = [0]
-        y_values = [0]
-
-    fig = px.bar(
-        data,
-        x=x_values,
-        y=y_values,
-        labels=labels,
-        orientation="h",
-        title=title,
-        height=height,
-        width=width
-    )
-
-    return fig
-
-
 def main():
     # ---------------------------------------------------------------------------------
     # Load data.
@@ -125,7 +137,15 @@ def main():
 
     default_top_limit = -15
 
-    salary: pd.DataFrame = df[(df["salary_from"] > 0) & (df["salary_to"] > 0)]
+    exchange_rates = get_exchange_rates()
+
+    salary_full: pd.DataFrame = df[(df["salary_from"] > 0) & (df["salary_to"] > 0)]
+    salary_from_amount = df[(df["salary_from"] > 0) & (df["salary_to"] == 0)]["company"].count()
+    salary_to_amount = df[(df["salary_from"] == 0) & (df["salary_to"] > 0)]["company"].count()
+
+    currency_style = {
+        "width": "50px"
+    }
 
     default_style = {"display": "inline-block"}
 
@@ -196,17 +216,22 @@ def main():
                     ], style=default_style),
                     html.Div(children=[
                         dcc.Markdown("""       
-                            Filled salaries: **{0}**  
-                            Position titles: **{1}**  
+                            Salaries Full:&nbsp;&nbsp;&nbsp;&nbsp;**{0}**  
+                            Salaries From: **{1}**  
+                            Salaries To:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**{2}**  
+                              
+                            Unique position titles: **{3}**  
 
-                            Period From: **{2}**    
-                            Period To:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**{3}**    
+                            Period From: **{4}**    
+                            Period To:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**{5}**    
 
-                            Generated: **{4}**  
+                            Generated: **{6}**  
                             &nbsp;  
                             &nbsp;  
                             """.format(
-                            salary["company"].count(),
+                            salary_full["company"].count(),
+                            salary_from_amount,
+                            salary_to_amount,
                             df["title"].value_counts().count(),
                             date_min,
                             date_max,
@@ -217,7 +242,7 @@ def main():
                 html.Div(children=[
                     dcc.Graph(
                         id="tab1-top-city-graph",
-                        figure=get_top_fig(
+                        figure=get_top_horizontal_fig(
                             df["city"].value_counts(ascending=True),
                             default_top_limit,
                             {"x": "Vacancy", "y": "City"},
@@ -227,7 +252,7 @@ def main():
                     ),
                     dcc.Graph(
                         id="tab1-top-company-graph",
-                        figure=get_top_fig(
+                        figure=get_top_horizontal_fig(
                             df["company"].value_counts(ascending=True),
                             default_top_limit,
                             {"x": "Vacancy", "y": "Company"},
@@ -237,7 +262,7 @@ def main():
                     ),
                     dcc.Graph(
                         id="tab1-top-position-graph",
-                        figure=get_top_fig(
+                        figure=get_top_horizontal_fig(
                             df["title"].value_counts(ascending=True),
                             default_top_limit,
                             {"x": "Amount", "y": "Position"},
@@ -249,26 +274,51 @@ def main():
                 html.Div(children=[
                     dcc.Graph(
                         id="tab1-top-keyword-graph",
-                        figure=get_top_fig(
+                        figure=get_top_horizontal_fig(
                             keywords.value_counts(ascending=True),
                             default_top_limit,
                             {"x": "Amount", "y": "Keyword"},
-                            "Keyword: Top15"
+                            "Keyword: Top15",
+                            width=350
                         ),
                         style=default_style
                     ),
                     dcc.Graph(
                         id="tab1-top-tag-graph",
-                        figure=get_top_fig(
+                        figure=get_top_horizontal_fig(
                             tags.value_counts(ascending=True),
                             default_top_limit,
                             {"x": "Amount", "y": "Tag"},
-                            "Tag: Top15"
+                            "Tag: Top15",
+                            width=350
                         ),
                         style=default_style
                     ),
-                    dcc.Graph(id="tab1-top-lang", figure=get_lang_fig(df), style=default_style),
-                    dcc.Graph(id="tab1-salary-range", figure=get_salary_fig(salary), style=default_style)
+                    dcc.Graph(
+                        id="tab1-top-lang",
+                        figure=get_top_vertical_fig(
+                            df["lang"].value_counts(),
+                            {"index": "Language", "y": "Amount"},
+                            "Vacancy Language",
+                            width=350
+                        ),
+                        style=default_style
+                    ),
+                    dcc.Graph(
+                        id="tab1-salary-range",
+                        figure=get_salary_fig(salary_full, width=350),
+                        style=default_style
+                    ),
+                    dcc.Graph(
+                        id="tab1-top-salary-currency",
+                        figure=get_top_vertical_fig(
+                            df["salary_currency"].value_counts(ascending=True),
+                            {"index": "Currency", "y": "Amount"},
+                            "Salary Currency",
+                            width=350
+                        ),
+                        style=default_style
+                    ),
                 ], style=default_style)
             ])
 
@@ -276,7 +326,7 @@ def main():
             return html.Div(children=[
                 html.Div(children=[
                     html.Div(children=[
-                        html.H5("Filter options:"),
+                        html.H5("Filters:"),
                         dcc.Input(
                             id="tab2-position-input",
                             type="text",
@@ -292,6 +342,12 @@ def main():
                             type="text",
                             placeholder="Яндекс",
                         ),
+                    ], style=default_style),
+                    html.Div(children=[
+                        dcc.Markdown("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;")
+                    ], style=default_style),
+                    html.Div(children=[
+                        html.H5("Salary:"),
                         dcc.Input(
                             id="tab2-salary-from-input",
                             type="number",
@@ -302,20 +358,33 @@ def main():
                             type="number",
                             placeholder="to 300000",
                         ),
+                        html.Datalist(id="currencies", children=[
+                            html.Option(value="RUB"),
+                            html.Option(value="USD"),
+                            html.Option(value="EUR"),
+                        ]),
+                        dcc.Input(
+                            id="tab2-salary-currency-input",
+                            type="text",
+                            list="currencies",
+                            placeholder="RUB",
+                            value="RUB",
+                            style=currency_style
+                        ),
                     ], style=default_style),
                     html.Div(children=[
                         dcc.Markdown("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;")
                     ], style=default_style),
                     html.Div(children=[
-                        html.H5("Limit options:"),
+                        html.H5("Limits:"),
                         dcc.Input(
                             id="tab2-keyword-max-input",
-                            type="number",
+                            type="text",
                             placeholder="Keyword"
                         ),
                         dcc.Input(
                             id="tab2-tag-max-input",
-                            type="number",
+                            type="text",
                             placeholder="Tag"
                         ),
                     ], style=default_style),
@@ -323,20 +392,21 @@ def main():
                         dcc.Markdown("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;")
                     ], style=default_style),
                     html.Div(children=[
-                        html.H5("Date options:"),
+                        html.H5("Date:"),
                         dcc.DatePickerRange(
                             id="tab2-date-input",
                             start_date=date_min.date(),
                             end_date=date_max.date(),
                             min_date_allowed=date_min.date(),
-                            max_date_allowed=date_max.date()
+                            max_date_allowed=date_max.date(),
+                            style={"height": "30px"}
                         )
                     ], style=default_style)
                 ]),
                 html.Div(children=[
                     dcc.Graph(
                         id="tab2-city-graph",
-                        figure=get_top_fig(
+                        figure=get_top_horizontal_fig(
                             df["city"].value_counts(ascending=True),
                             default_top_limit,
                             {"x": "Amount", "y": "City"},
@@ -346,7 +416,7 @@ def main():
                     ),
                     dcc.Graph(
                         id="tab2-company-graph",
-                        figure=get_top_fig(
+                        figure=get_top_horizontal_fig(
                             df["company"].value_counts(ascending=True),
                             default_top_limit,
                             {"x": "Amount", "y": "Company"},
@@ -356,7 +426,7 @@ def main():
                     ),
                     dcc.Graph(
                         id="tab2-position-graph",
-                        figure=get_top_fig(
+                        figure=get_top_horizontal_fig(
                             df["title"].value_counts(ascending=True),
                             default_top_limit,
                             {"x": "Amount", "y": "Position"},
@@ -368,7 +438,7 @@ def main():
                 html.Div(children=[
                     dcc.Graph(
                         id="tab2-keyword-graph",
-                        figure=get_top_fig(
+                        figure=get_top_horizontal_fig(
                             keywords.value_counts(ascending=True),
                             default_top_limit,
                             {"x": "Amount", "y": "Keyword"},
@@ -378,7 +448,7 @@ def main():
                     ),
                     dcc.Graph(
                         id="tab2-tag-graph",
-                        figure=get_top_fig(
+                        figure=get_top_horizontal_fig(
                             tags.value_counts(ascending=True),
                             default_top_limit,
                             {"x": "Amount", "y": "Tag"},
@@ -386,7 +456,11 @@ def main():
                         ),
                         style=default_style
                     ),
-                    dcc.Graph(id="tab2-salary-range", figure=get_salary_fig(salary), style=default_style)
+                    dcc.Graph(
+                        id="tab2-salary-range",
+                        figure=get_salary_fig(salary_full),
+                        style=default_style
+                    )
                 ])
             ])
 
@@ -405,6 +479,7 @@ def main():
             Input("tab2-company-input", "value"),
             Input("tab2-salary-from-input", "value"),
             Input("tab2-salary-to-input", "value"),
+            Input("tab2-salary-currency-input", "value"),
             Input("tab2-keyword-max-input", "value"),
             Input("tab2-tag-max-input", "value"),
             Input("tab2-date-input", "start_date"),
@@ -412,7 +487,8 @@ def main():
         ]
     )
     def update_tab2_graph(*args):
-        position, city, company, salary_from, salary_to, keyword_max, tag_max, start_date, end_date = args
+        position, city, company, salary_from, salary_to, salary_currency, \
+            keyword_max, tag_max, start_date, end_date = args
         data = df
 
         if position:
@@ -427,15 +503,18 @@ def main():
             company_escaped = re.escape(company)
             data = data[data["company"].str.match(company_escaped, case=False)]
 
+        print(salary_currency)
         # Salary.
         if salary_from and salary_to:
             data = data[(data["salary_from"] >= salary_from) & (data["salary_from"] <= salary_to) &
-                        (data["salary_to"] >= salary_from) & (data["salary_to"] <= salary_to)]
+                        (data["salary_to"] >= salary_from) & (data["salary_to"] <= salary_to) &
+                        (data["salary_currency"] == salary_currency)]
         elif salary_from:
-            data = data[data["salary_from"] >= salary_from]
+            data = data[(data["salary_from"] >= salary_from) & (data["salary_currency"] == salary_currency)]
         elif salary_to:
-            data = data[data["salary_to"] <= salary_to]
+            data = data[(data["salary_to"] <= salary_to) & (data["salary_currency"] == salary_currency)]
 
+        # Date.
         if start_date and end_date:
             data = data[(data["date"] >= start_date) & (data["date"] <= end_date)]
         elif start_date:
@@ -459,32 +538,32 @@ def main():
             tag_max = default_top_limit
 
         figs = [
-            get_top_fig(
+            get_top_horizontal_fig(
                 data["city"].value_counts(ascending=True),
                 default_top_limit,
                 {"x": "Amount", "y": "City"},
                 "City"
             ),
-            get_top_fig(
+            get_top_horizontal_fig(
                 data["company"].value_counts(ascending=True),
                 default_top_limit,
                 {"x": "Amount", "y": "Company"},
                 "Company"
             ),
-            get_top_fig(
+            get_top_horizontal_fig(
                 data["title"].value_counts(ascending=True),
                 default_top_limit,
                 {"x": "Amount", "y": "Position"},
                 "Position"
             ),
-            get_top_fig(
+            get_top_horizontal_fig(
                 data["keywords"].explode().value_counts(ascending=True),
                 keyword_max,
                 {"x": "Amount", "y": "Keyword"},
                 "Keyword",
                 height=keyword_height
             ),
-            get_top_fig(
+            get_top_horizontal_fig(
                 data["tags"].explode().value_counts(ascending=True),
                 tag_max,
                 {"x": "Amount", "y": "Tag"},
