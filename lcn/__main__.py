@@ -9,8 +9,6 @@ import re
 
 from dash.dependencies import Input, Output
 from datetime import datetime
-
-from plotly.graph_objs import Layout
 from zeep import Client
 
 
@@ -451,7 +449,7 @@ def main():
                             keywords.value_counts(ascending=True),
                             default_top_limit,
                             {"x": "Amount", "y": "Keyword"},
-                            "Keyword: Top15"
+                            "Keyword"
                         ),
                         style=default_style
                     ),
@@ -461,7 +459,7 @@ def main():
                             tags.value_counts(ascending=True),
                             default_top_limit,
                             {"x": "Amount", "y": "Tag"},
-                            "Tag: Top15"
+                            "Tag"
                         ),
                         style=default_style
                     ),
