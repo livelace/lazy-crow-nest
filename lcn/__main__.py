@@ -192,7 +192,8 @@ def main():
                     html.Div(children=[
                         dcc.Markdown("""
                             ##### Application description: 
-                            The main purpose of [this app](https://github.com/livelace/lazy-crow-nest) is to give a quick overview  
+                            The main purpose of [this app](https://github.com/livelace/lazy-crow-nest) is to give a 
+                            quick overview   
                             of job market in Russia, specifically - computer science.  
                             Dataset is based on publicly available information from  
                             such sites as [hh.ru](https://hh.ru). Data gathering is performed  
