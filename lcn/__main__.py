@@ -1,3 +1,5 @@
+import time
+
 import dash
 import dash_bootstrap_components as dbc
 import dash_core_components as dcc
@@ -172,7 +174,7 @@ def main():
     app.layout = html.Div(children=[
         dcc.Tabs(id="tabs", value="tab1", children=[
             dcc.Tab(label="Overview", value="tab1", style=tab_style, selected_style=tab_selected_style),
-            dcc.Tab(label="Filtering", value="tab2", style=tab_style, selected_style=tab_selected_style),
+            dcc.Tab(label="Filtering", id="tab2", value="tab2", style=tab_style, selected_style=tab_selected_style),
             dcc.Tab(label="Timeline", value="tab3", style=tab_style, selected_style=tab_selected_style),
         ], style=tabs_style),
         html.Div(id='tabs-content')
@@ -533,6 +535,7 @@ def main():
     # Callback functions.
     @app.callback(
         [
+            Output("tab2", "label"),
             Output("tab2-city-graph", "figure"),
             Output("tab2-company-graph", "figure"),
             Output("tab2-position-graph", "figure"),
@@ -553,7 +556,9 @@ def main():
             Input("tab2-date-input", "end_date"),
         ]
     )
-    def update_tab2_graph(*args):
+    def update_tab2(*args):
+        begin_time = time.time()
+
         position, city, company, salary_from, salary_to, salary_currency, \
             keyword_max, tag_max, start_date, end_date = args
         data = df
@@ -606,7 +611,10 @@ def main():
             tag_height = 500
             tag_max = default_top_limit
 
+        end_time = time.time()
+
         figs = [
+            "Filtering ({:.2f}s)".format(end_time - begin_time),
             get_top_horizontal_fig(
                 data["city"].value_counts(ascending=True),
                 default_top_limit,
