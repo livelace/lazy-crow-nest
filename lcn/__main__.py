@@ -45,23 +45,30 @@ def get_top_horizontal_fig(data, limit, labels, title, height=500, width=480):
         width=width
     )
 
-    fig.update_xaxes(tickformat="d")
+    fig.update_xaxes(tickformat="d", automargin=False)
 
     return fig
 
 
 def get_top_vertical_fig(data, labels, title, height=500, width=400):
+    if data.size > 0:
+        x_values = data.keys()
+        y_values = data.values
+    else:
+        x_values = [0]
+        y_values = [0]
+
     fig = px.bar(
         data,
-        x=data.keys(),
-        y=data.values,
+        x=x_values,
+        y=y_values,
         labels=labels,
         title=title,
         height=height,
         width=width
     )
 
-    fig.update_xaxes(tickformat="d")
+    fig.update_xaxes(tickformat="d", automargin=False)
 
     return fig
 
@@ -113,7 +120,7 @@ def get_salary_fig(data, height=500, width=400):
         width=width
     )
 
-    fig.update_xaxes(tickformat="d")
+    fig.update_xaxes(tickformat="d", automargin=False)
 
     return fig
 
@@ -174,15 +181,15 @@ def main():
     app.layout = html.Div(children=[
         dcc.Tabs(id="tabs", value="tab1", children=[
             dcc.Tab(label="Overview", id="tab1", value="tab1", style=tab_style, selected_style=tab_selected_style),
-            dcc.Tab(label="Filtering", id="tab2", value="tab2", style=tab_style, selected_style=tab_selected_style),
+            dcc.Tab(label="Details", id="tab2", value="tab2", style=tab_style, selected_style=tab_selected_style),
             dcc.Tab(label="Timeline", id="tab3", value="tab3", style=tab_style, selected_style=tab_selected_style),
         ], style=tabs_style),
-        html.Div(id='tabs-content')
+        html.Div(id="tabs-content")
     ])
 
-    @app.callback(Output('tabs-content', 'children'), Input('tabs', 'value'))
+    @app.callback(Output("tabs-content", "children"), Input("tabs", "value"))
     def render_content(tab):
-        if tab == 'tab1':
+        if tab == "tab1":
             return html.Div(children=[
                 html.Div(children=[
                     html.Div(children=[
@@ -328,7 +335,7 @@ def main():
                 ], style=default_style)
             ])
 
-        elif tab == 'tab2':
+        elif tab == "tab2":
             return html.Div(children=[
                 html.Div(children=[
                     html.Div(children=[
@@ -467,72 +474,96 @@ def main():
                 ])
             ])
 
-        elif tab == 'tab3':
+        elif tab == "tab3":
             return html.Div(children=[
-                dcc.Graph(
-                    id="tab2-timeline-year-graph",
-                    figure=get_top_vertical_fig(
-                        df["year"].value_counts(ascending=True),
-                        {"index": "Year", "y": "Amount"},
-                        "Per Year",
-                        width=500
+                html.Div(children=[
+                    html.H5("Filters:"),
+                    dcc.Input(
+                        id="tab3-position-input",
+                        type="text",
+                        placeholder="Python"
                     ),
-                    style=default_style
-                ),
-                dcc.Graph(
-                    id="tab2-timeline-month-graph",
-                    figure=get_top_vertical_fig(
-                        df["month"].value_counts(ascending=True),
-                        {"index": "Month", "y": "Amount"},
-                        "Per Month",
-                        width=500
+                    dcc.Input(
+                        id="tab3-city-input",
+                        type="text",
+                        placeholder="Москва"
                     ),
-                    style=default_style
-                ),
-                dcc.Graph(
-                    id="tab2-timeline-day-graph",
-                    figure=get_top_vertical_fig(
-                        df["day"].value_counts(ascending=True),
-                        {"index": "Month Day", "y": "Amount"},
-                        "Per Day",
-                        width=500
+                    dcc.Input(
+                        id="tab3-company-input",
+                        type="text",
+                        placeholder="Яндекс",
                     ),
-                    style=default_style
-                ),
-                dcc.Graph(
-                    id="tab2-timeline-weekday-graph",
-                    figure=get_top_vertical_fig(
-                        df["week_day"].value_counts(ascending=True),
-                        {"index": "Week Day", "y": "Amount"},
-                        "Per Week Day",
-                        width=500
+                ], style={"width": "100%", "display": "flex", "align-items": "center", "justify-content": "center"}),
+                html.Div(children=[
+                    dcc.Graph(
+                        id="tab3-timeline-year-graph",
+                        figure=get_top_vertical_fig(
+                            df["year"].value_counts(ascending=True),
+                            {"index": "Year", "y": "Amount"},
+                            "Per Year",
+                            width=500
+                        ),
+                        style=default_style
                     ),
-                    style=default_style
-                ),
-                dcc.Graph(
-                    id="tab2-timeline-hour-graph",
-                    figure=get_top_vertical_fig(
-                        df["hour"].value_counts(ascending=True),
-                        {"index": "Hour", "y": "Amount"},
-                        "Per Hour",
-                        width=500
+                    dcc.Graph(
+                        id="tab3-timeline-month-graph",
+                        figure=get_top_vertical_fig(
+                            df["month"].value_counts(ascending=True),
+                            {"index": "Month", "y": "Amount"},
+                            "Per Month",
+                            width=500
+                        ),
+                        style=default_style
                     ),
-                    style=default_style
-                ),
-                dcc.Graph(
-                    id="tab2-timeline-minute-graph",
-                    figure=get_top_vertical_fig(
-                        df["minute"].value_counts(ascending=True),
-                        {"index": "Minute", "y": "Amount"},
-                        "Per Minute",
-                        width=500
+                    dcc.Graph(
+                        id="tab3-timeline-day-graph",
+                        figure=get_top_vertical_fig(
+                            df["day"].value_counts(ascending=True),
+                            {"index": "Month Day", "y": "Amount"},
+                            "Per Day",
+                            width=500
+                        ),
+                        style=default_style
+                    )
+                ]),
+                html.Div(children=[
+                    dcc.Graph(
+                        id="tab3-timeline-weekday-graph",
+                        figure=get_top_vertical_fig(
+                            df["week_day"].value_counts(ascending=True),
+                            {"index": "Week Day", "y": "Amount"},
+                            "Per Week Day",
+                            width=500
+                        ),
+                        style=default_style
                     ),
-                    style=default_style
-                )
+                    dcc.Graph(
+                        id="tab3-timeline-hour-graph",
+                        figure=get_top_vertical_fig(
+                            df["hour"].value_counts(ascending=True),
+                            {"index": "Hour", "y": "Amount"},
+                            "Per Hour",
+                            width=500
+                        ),
+                        style=default_style
+                    ),
+                    dcc.Graph(
+                        id="tab3-timeline-minute-graph",
+                        figure=get_top_vertical_fig(
+                            df["minute"].value_counts(ascending=True),
+                            {"index": "Minute", "y": "Amount"},
+                            "Per Minute",
+                            width=500
+                        ),
+                        style=default_style
+                    )
+                ])
             ])
 
     # ---------------------------------------------------------------------------------
     # Callback functions.
+
+    # Tab 2.
     @app.callback(
         [
             Output("tab2", "label"),
@@ -614,7 +645,7 @@ def main():
         end_time = time.time()
 
         figs = [
-            "Filtering ({:.2f}s)".format(end_time - begin_time),
+            "Details ({:.2f}s)".format(end_time - begin_time),
             get_top_horizontal_fig(
                 data["city"].value_counts(ascending=True),
                 default_top_limit,
@@ -649,6 +680,85 @@ def main():
             ),
             get_salary_fig(
                 data
+            )
+        ]
+
+        return figs
+
+    # Tab 3.
+    @app.callback(
+        [
+            Output("tab3", "label"),
+            Output("tab3-timeline-year-graph", "figure"),
+            Output("tab3-timeline-month-graph", "figure"),
+            Output("tab3-timeline-day-graph", "figure"),
+            Output("tab3-timeline-weekday-graph", "figure"),
+            Output("tab3-timeline-hour-graph", "figure"),
+            Output("tab3-timeline-minute-graph", "figure"),
+        ],
+        [
+            Input("tab3-position-input", "value"),
+            Input("tab3-city-input", "value"),
+            Input("tab3-company-input", "value")
+        ]
+    )
+    def update_tab3(*args):
+        begin_time = time.time()
+
+        position, city, company = args
+        data = df
+
+        if position:
+            position_escaped = re.escape(position)
+            data = data[data["title"].str.match(position_escaped, case=False)]
+
+        if city:
+            city_escaped = re.escape(city)
+            data = data[data["city"].str.match(city_escaped, case=False)]
+
+        if company:
+            company_escaped = re.escape(company)
+            data = data[data["company"].str.match(company_escaped, case=False)]
+
+        end_time = time.time()
+
+        figs = [
+            "Timeline ({:.2f}s)".format(end_time - begin_time),
+            get_top_vertical_fig(
+                data["year"].value_counts(ascending=True),
+                {"index": "Year", "y": "Amount"},
+                "Per Year",
+                width=500
+            ),
+            get_top_vertical_fig(
+                data["month"].value_counts(ascending=True),
+                {"index": "Month", "y": "Amount"},
+                "Per Month",
+                width=500
+            ),
+            get_top_vertical_fig(
+                data["day"].value_counts(ascending=True),
+                {"index": "Month Day", "y": "Amount"},
+                "Per Day",
+                width=500
+            ),
+            get_top_vertical_fig(
+                data["week_day"].value_counts(ascending=True),
+                {"index": "Week Day", "y": "Amount"},
+                "Per Week Day",
+                width=500
+            ),
+            get_top_vertical_fig(
+                data["hour"].value_counts(ascending=True),
+                {"index": "Hour", "y": "Amount"},
+                "Per Hour",
+                width=500
+            ),
+            get_top_vertical_fig(
+                data["minute"].value_counts(ascending=True),
+                {"index": "Minute", "y": "Amount"},
+                "Per Minute",
+                width=500
             )
         ]
 
