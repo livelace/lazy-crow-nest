@@ -173,9 +173,9 @@ def main():
     app = dash.Dash(__name__, external_stylesheets=[dbc.themes.SIMPLEX])
     app.layout = html.Div(children=[
         dcc.Tabs(id="tabs", value="tab1", children=[
-            dcc.Tab(label="Overview", value="tab1", style=tab_style, selected_style=tab_selected_style),
+            dcc.Tab(label="Overview", id="tab1", value="tab1", style=tab_style, selected_style=tab_selected_style),
             dcc.Tab(label="Filtering", id="tab2", value="tab2", style=tab_style, selected_style=tab_selected_style),
-            dcc.Tab(label="Timeline", value="tab3", style=tab_style, selected_style=tab_selected_style),
+            dcc.Tab(label="Timeline", id="tab3", value="tab3", style=tab_style, selected_style=tab_selected_style),
         ], style=tabs_style),
         html.Div(id='tabs-content')
     ])
