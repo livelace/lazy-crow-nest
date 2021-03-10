@@ -132,12 +132,58 @@ def main():
     data_path = os.environ["DATA_PATH"]
 
     df_file = "{}/common.pickle".format(data_path)
-    keywords_file = "{}/common-keywords.pickle".format(data_path)
-    tags_file = "{}/common-tags.pickle".format(data_path)
+    df = pd.read_pickle(df_file)
 
-    df: pd.DataFrame = pd.read_pickle(df_file)
-    keywords: pd.Series = pd.read_pickle(keywords_file)
-    tags: pd.Series = pd.read_pickle(tags_file)
+    keywords_exploded = df["keywords"].explode()
+    tags_exploded = df["tags"].explode()
+
+    keywords_unique = keywords_exploded.unique().size
+    tags_unique = tags_exploded.unique().size
+
+    keywords_values = keywords_exploded.value_counts(ascending=True)
+    tags_values = keywords_exploded.value_counts(ascending=True)
+
+    cities_unique = df["city"].unique().size
+    companies_unique = df["company"].unique().size
+    positions_unique = df["title"].unique().size
+    vacancies_total = df["company"].count()
+
+    cities_values = df["city"].value_counts(ascending=True)
+    companies_values = df["company"].value_counts(ascending=True)
+    positions_values = df["title"].value_counts(ascending=True)
+    lang_values = df["lang"].value_counts()
+    salary_currency_values = df["salary_currency"].value_counts(ascending=True)
+
+    years_values = df["year"].value_counts(ascending=True)
+    months_values = df["month"].value_counts(ascending=True)
+    days_values = df["day"].value_counts(ascending=True)
+    week_days_values = df["week_day"].value_counts(ascending=True)
+    hours_values = df["hour"].value_counts(ascending=True)
+    minutes_values = df["minute"].value_counts(ascending=True)
+
+    # ---------------------------------------------------------------------------------
+    # Styles.
+    currency_style = {"width": "50px"}
+
+    date_style = {"height": "30px"}
+
+    default_style = {"display": "inline-block"}
+
+    input_style = {"width": "150px"}
+
+    tabs_style = {"height": "35px"}
+
+    tab_style = {
+        "borderBottom": "1px solid #d6d6d6",
+        "padding": "6px",
+    }
+
+    tab_selected_style = {
+        "borderTop": "1px solid #d6d6d6",
+        "borderBottom": "1px solid #d6d6d6",
+        "fontWeight": "bold",
+        "padding": "6px"
+    }
 
     # ---------------------------------------------------------------------------------
     # Derive common variables.
@@ -155,23 +201,6 @@ def main():
     salary_full_amount = df[(df["salary_from"] > 0) & (df["salary_to"] > 0)]["company"].count()
     salary_from_amount = df[(df["salary_from"] > 0) & (df["salary_to"] == 0)]["company"].count()
     salary_to_amount = df[(df["salary_from"] == 0) & (df["salary_to"] > 0)]["company"].count()
-
-    currency_style = {"width": "50px"}
-    date_style = {"height": "30px"}
-    default_style = {"display": "inline-block"}
-
-    tabs_style = {"height": "35px"}
-    tab_style = {
-        "borderBottom": "1px solid #d6d6d6",
-        "padding": "6px",
-    }
-
-    tab_selected_style = {
-        "borderTop": "1px solid #d6d6d6",
-        "borderBottom": "1px solid #d6d6d6",
-        "fontWeight": "bold",
-        "padding": "6px"
-    }
 
     # ---------------------------------------------------------------------------------
     # Forming Dash.
@@ -196,56 +225,55 @@ def main():
                         dcc.Markdown("""
                             ##### Application description: 
                             The main purpose of [this app](https://github.com/livelace/lazy-crow-nest) is to give a 
-                            quick overview   
+                            quick overview&nbsp;&nbsp;&nbsp;&nbsp;  
                             of job market in Russia, specifically - computer science.  
                             Dataset is based on publicly available information from  
                             such sites as [hh.ru](https://hh.ru). Data gathering is performed  
                             with help of an in-house tool - [gosquito](https://github.com/livelace/gosquito).  
-
+                              
                             """),
                     ]),
                     html.Div(children=[
                         dcc.Markdown("""
                             ##### Dataset information:  
 
-                            Total cities: **{0}**&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;    
-                            Total companies: **{1}**&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;        
+                            Unique cities: **{0}**&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;    
+                            Unique companies: **{1}**&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;        
                             Total vacancies: **{2}**&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;    
                             """.format(
-                            df["city"].value_counts().count(),
-                            df["company"].value_counts().count(),
-                            df["company"].count()
+                            cities_unique,
+                            companies_unique,
+                            vacancies_total
                         ))
                     ], style=default_style),
                     html.Div(children=[
                         dcc.Markdown("""
-                            Total keywords: **{0}**&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;    
-                            Total tags: **{1}**&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  
-                            &nbsp;&nbsp;&nbsp;&nbsp;            
+                            Unique keywords: **{0}**  
+                            Unique tags: **{1}**   
+                            Unique positions: **{2}**           
                             """.format(
-                            keywords.value_counts().count(),
-                            tags.value_counts().count(),
+                            keywords_unique,
+                            tags_unique,
+                            positions_unique,
                         ))
                     ], style=default_style),
                     html.Div(children=[
                         dcc.Markdown("""       
-                            Salaries Full:&nbsp;&nbsp;&nbsp;&nbsp;**{0}**  
-                            Salaries From: **{1}**  
-                            Salaries To:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**{2}**  
-                              
-                            Unique position titles: **{3}**  
+                            Salaries Filled Full:&nbsp;&nbsp;
+                            **{0}**  
+                            Salaries Only From: **{1}**  
+                            Salaries Only To:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**{2}**  
+                            
+                            Period From: **{3}**    
+                            Period To:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**{4}**    
 
-                            Period From: **{4}**    
-                            Period To:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**{5}**    
-
-                            Generated: **{6}**  
+                            Generated: **{5}**  
                             &nbsp;  
                             &nbsp;  
                             """.format(
                             salary_full_amount,
                             salary_from_amount,
                             salary_to_amount,
-                            df["title"].value_counts().count(),
                             date_min,
                             date_max,
                             dataset_generated
@@ -256,7 +284,7 @@ def main():
                     dcc.Graph(
                         id="tab1-top-city-graph",
                         figure=get_top_horizontal_fig(
-                            df["city"].value_counts(ascending=True),
+                            cities_values,
                             default_top_limit,
                             {"x": "Vacancy", "y": "City"},
                             "City: Top15"
@@ -266,7 +294,7 @@ def main():
                     dcc.Graph(
                         id="tab1-top-company-graph",
                         figure=get_top_horizontal_fig(
-                            df["company"].value_counts(ascending=True),
+                            companies_values,
                             default_top_limit,
                             {"x": "Vacancy", "y": "Company"},
                             "Company: Top15"
@@ -276,7 +304,7 @@ def main():
                     dcc.Graph(
                         id="tab1-top-position-graph",
                         figure=get_top_horizontal_fig(
-                            df["title"].value_counts(ascending=True),
+                            positions_values,
                             default_top_limit,
                             {"x": "Amount", "y": "Position"},
                             "Position: Top15"
@@ -288,7 +316,7 @@ def main():
                     dcc.Graph(
                         id="tab1-top-keyword-graph",
                         figure=get_top_horizontal_fig(
-                            keywords.value_counts(ascending=True),
+                            keywords_values,
                             default_top_limit,
                             {"x": "Amount", "y": "Keyword"},
                             "Keyword: Top15",
@@ -299,7 +327,7 @@ def main():
                     dcc.Graph(
                         id="tab1-top-tag-graph",
                         figure=get_top_horizontal_fig(
-                            tags.value_counts(ascending=True),
+                            tags_values,
                             default_top_limit,
                             {"x": "Amount", "y": "Tag"},
                             "Tag: Top15",
@@ -310,7 +338,7 @@ def main():
                     dcc.Graph(
                         id="tab1-top-lang",
                         figure=get_top_vertical_fig(
-                            df["lang"].value_counts(),
+                            lang_values,
                             {"index": "Language", "y": "Amount"},
                             "Vacancy Language",
                             width=350
@@ -325,7 +353,7 @@ def main():
                     dcc.Graph(
                         id="tab1-top-salary-currency",
                         figure=get_top_vertical_fig(
-                            df["salary_currency"].value_counts(ascending=True),
+                            salary_currency_values,
                             {"index": "Currency", "y": "Amount"},
                             "Salary Currency",
                             width=350
@@ -343,17 +371,32 @@ def main():
                         dcc.Input(
                             id="tab2-position-input",
                             type="text",
-                            placeholder="Python"
+                            placeholder="Python",
+                            style=input_style
                         ),
                         dcc.Input(
                             id="tab2-city-input",
                             type="text",
-                            placeholder="Москва"
+                            placeholder="Москва",
+                            style=input_style
                         ),
                         dcc.Input(
                             id="tab2-company-input",
                             type="text",
                             placeholder="Яндекс",
+                            style=input_style
+                        ),
+                        dcc.Input(
+                            id="tab2-keyword-input",
+                            type="text",
+                            placeholder="Akka",
+                            style=input_style
+                        ),
+                        dcc.Input(
+                            id="tab2-tag-input",
+                            type="text",
+                            placeholder="Scala",
+                            style=input_style
                         ),
                     ], style=default_style),
                     html.Div(children=[
@@ -365,11 +408,13 @@ def main():
                             id="tab2-salary-from-input",
                             type="number",
                             placeholder="from 100000",
+                            style=input_style
                         ),
                         dcc.Input(
                             id="tab2-salary-to-input",
                             type="number",
                             placeholder="to 300000",
+                            style=input_style
                         ),
                         html.Datalist(id="currencies", children=[
                             html.Option(value="RUB"),
@@ -392,12 +437,15 @@ def main():
                         dcc.Input(
                             id="tab2-keyword-max-input",
                             type="number",
-                            placeholder="Keyword"
+                            placeholder="Keyword",
+                            style=input_style
+
                         ),
                         dcc.Input(
                             id="tab2-tag-max-input",
                             type="number",
-                            placeholder="Tag"
+                            placeholder="Tag",
+                            style=input_style
                         ),
                     ], style=default_style),
                     html.Div(children=[
@@ -417,7 +465,7 @@ def main():
                     dcc.Graph(
                         id="tab2-city-graph",
                         figure=get_top_horizontal_fig(
-                            df["city"].value_counts(ascending=True),
+                            cities_values,
                             default_top_limit,
                             {"x": "Amount", "y": "City"},
                             "City"
@@ -427,7 +475,7 @@ def main():
                     dcc.Graph(
                         id="tab2-company-graph",
                         figure=get_top_horizontal_fig(
-                            df["company"].value_counts(ascending=True),
+                            companies_values,
                             default_top_limit,
                             {"x": "Amount", "y": "Company"},
                             "Company"
@@ -437,7 +485,7 @@ def main():
                     dcc.Graph(
                         id="tab2-position-graph",
                         figure=get_top_horizontal_fig(
-                            df["title"].value_counts(ascending=True),
+                            positions_values,
                             default_top_limit,
                             {"x": "Amount", "y": "Position"},
                             "Position"
@@ -449,7 +497,7 @@ def main():
                     dcc.Graph(
                         id="tab2-keyword-graph",
                         figure=get_top_horizontal_fig(
-                            keywords.value_counts(ascending=True),
+                            keywords_values,
                             default_top_limit,
                             {"x": "Amount", "y": "Keyword"},
                             "Keyword"
@@ -459,7 +507,7 @@ def main():
                     dcc.Graph(
                         id="tab2-tag-graph",
                         figure=get_top_horizontal_fig(
-                            tags.value_counts(ascending=True),
+                            tags_values,
                             default_top_limit,
                             {"x": "Amount", "y": "Tag"},
                             "Tag"
@@ -498,7 +546,7 @@ def main():
                     dcc.Graph(
                         id="tab3-timeline-year-graph",
                         figure=get_top_vertical_fig(
-                            df["year"].value_counts(ascending=True),
+                            years_values,
                             {"index": "Year", "y": "Amount"},
                             "Per Year",
                             width=500
@@ -508,7 +556,7 @@ def main():
                     dcc.Graph(
                         id="tab3-timeline-month-graph",
                         figure=get_top_vertical_fig(
-                            df["month"].value_counts(ascending=True),
+                            months_values,
                             {"index": "Month", "y": "Amount"},
                             "Per Month",
                             width=500
@@ -518,7 +566,7 @@ def main():
                     dcc.Graph(
                         id="tab3-timeline-day-graph",
                         figure=get_top_vertical_fig(
-                            df["day"].value_counts(ascending=True),
+                            days_values,
                             {"index": "Month Day", "y": "Amount"},
                             "Per Day",
                             width=500
@@ -530,7 +578,7 @@ def main():
                     dcc.Graph(
                         id="tab3-timeline-weekday-graph",
                         figure=get_top_vertical_fig(
-                            df["week_day"].value_counts(ascending=True),
+                            week_days_values,
                             {"index": "Week Day", "y": "Amount"},
                             "Per Week Day",
                             width=500
@@ -540,7 +588,7 @@ def main():
                     dcc.Graph(
                         id="tab3-timeline-hour-graph",
                         figure=get_top_vertical_fig(
-                            df["hour"].value_counts(ascending=True),
+                            hours_values,
                             {"index": "Hour", "y": "Amount"},
                             "Per Hour",
                             width=500
@@ -550,7 +598,7 @@ def main():
                     dcc.Graph(
                         id="tab3-timeline-minute-graph",
                         figure=get_top_vertical_fig(
-                            df["minute"].value_counts(ascending=True),
+                            minutes_values,
                             {"index": "Minute", "y": "Amount"},
                             "Per Minute",
                             width=500
@@ -578,6 +626,8 @@ def main():
             Input("tab2-position-input", "value"),
             Input("tab2-city-input", "value"),
             Input("tab2-company-input", "value"),
+            Input("tab2-keyword-input", "value"),
+            Input("tab2-tag-input", "value"),
             Input("tab2-salary-from-input", "value"),
             Input("tab2-salary-to-input", "value"),
             Input("tab2-salary-currency-input", "value"),
@@ -590,21 +640,31 @@ def main():
     def update_tab2(*args):
         begin_time = time.time()
 
-        position, city, company, salary_from, salary_to, salary_currency, \
-            keyword_max, tag_max, start_date, end_date = args
+        position, city, company, keyword, tag, salary_from, salary_to, salary_currency, keyword_max, tag_max, \
+            start_date, end_date = args
         data = df
 
+        # Primary filters.
         if position:
-            position_escaped = re.escape(position)
-            data = data[data["title"].str.match(position_escaped, case=False)]
+            data = data[data["title"].str.match(re.escape(position), case=False)]
 
         if city:
-            city_escaped = re.escape(city)
-            data = data[data["city"].str.match(city_escaped, case=False)]
+            data = data[data["city"].str.match(re.escape(city), case=False)]
 
         if company:
-            company_escaped = re.escape(company)
-            data = data[data["company"].str.match(company_escaped, case=False)]
+            data = data[data["company"].str.match(re.escape(company), case=False)]
+
+        if keyword:
+            keywords_index = keywords_exploded.str.contains(keyword, case=False, na=False)
+            keywords_index = keywords_index[keywords_index == True]
+            keywords_index = keywords_index[~keywords_index.index.duplicated(keep='first')]
+            data = data[data.index.isin(keywords_index.index)]
+
+        if tag:
+            tags_index = tags_exploded.str.contains(tag, case=False, na=False)
+            tags_index = tags_index[tags_index == True]
+            tags_index = tags_index[~tags_index.index.duplicated(keep='first')]
+            data = data[data.index.isin(tags_index.index)]
 
         # Salary.
         if not salary_currency:
