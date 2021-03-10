@@ -141,7 +141,7 @@ def main():
     tags_unique = tags_exploded.unique().size
 
     keywords_values = keywords_exploded.value_counts(ascending=True)
-    tags_values = keywords_exploded.value_counts(ascending=True)
+    tags_values = tags_exploded.value_counts(ascending=True)
 
     cities_unique = df["city"].unique().size
     companies_unique = df["company"].unique().size
