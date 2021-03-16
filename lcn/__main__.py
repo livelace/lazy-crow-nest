@@ -389,13 +389,13 @@ def main():
                         dcc.Input(
                             id="tab2-keyword-input",
                             type="text",
-                            placeholder="Akka",
+                            placeholder="Keyword",
                             style=input_style
                         ),
                         dcc.Input(
                             id="tab2-tag-input",
                             type="text",
-                            placeholder="Scala",
+                            placeholder="Tag",
                             style=input_style
                         ),
                     ], style=default_style),
@@ -418,8 +418,10 @@ def main():
                         ),
                         html.Datalist(id="currencies", children=[
                             html.Option(value="RUB"),
-                            html.Option(value="USD"),
+                            html.Option(value="BYN"),
                             html.Option(value="EUR"),
+                            html.Option(value="UAH"),
+                            html.Option(value="USD")
                         ]),
                         dcc.Input(
                             id="tab2-salary-currency-input",
@@ -518,7 +520,17 @@ def main():
                         id="tab2-salary-range",
                         figure=get_salary_fig(df),
                         style=default_style
-                    )
+                    ),
+                    dcc.Graph(
+                        id="tab2-top-salary-currency",
+                        figure=get_top_vertical_fig(
+                            salary_currency_values,
+                            {"index": "Currency", "y": "Amount"},
+                            "Salary Currency",
+                            width=350
+                        ),
+                        style=default_style
+                    ),
                 ])
             ])
 
@@ -620,7 +632,9 @@ def main():
             Output("tab2-position-graph", "figure"),
             Output("tab2-keyword-graph", "figure"),
             Output("tab2-tag-graph", "figure"),
-            Output("tab2-salary-range", "figure")
+            Output("tab2-salary-range", "figure"),
+            Output("tab2-top-salary-currency", "figure")
+
         ],
         [
             Input("tab2-position-input", "value"),
@@ -646,13 +660,13 @@ def main():
 
         # Primary filters.
         if position:
-            data = data[data["title"].str.match(re.escape(position), case=False)]
+            data = data[data["title"].str.match(position, case=False)]
 
         if city:
-            data = data[data["city"].str.match(re.escape(city), case=False)]
+            data = data[data["city"].str.match(city, case=False)]
 
         if company:
-            data = data[data["company"].str.match(re.escape(company), case=False)]
+            data = data[data["company"].str.match(company, case=False)]
 
         if keyword:
             keywords_index = keywords_exploded.str.contains(keyword, case=False, na=False)
@@ -740,6 +754,12 @@ def main():
             ),
             get_salary_fig(
                 data
+            ),
+            get_top_vertical_fig(
+                data["salary_currency"].value_counts(ascending=True),
+                {"index": "Currency", "y": "Amount"},
+                "Salary Currency",
+                width=350
             )
         ]
 
