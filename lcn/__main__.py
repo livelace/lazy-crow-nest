@@ -669,13 +669,13 @@ def main():
             data = data[data["company"].str.match(company, case=False)]
 
         if keyword:
-            keywords_index = keywords_exploded.str.contains(keyword, case=False, na=False)
+            keywords_index = keywords_exploded.str.match(keyword, case=False, na=False)
             keywords_index = keywords_index[keywords_index == True]
             keywords_index = keywords_index[~keywords_index.index.duplicated(keep='first')]
             data = data[data.index.isin(keywords_index.index)]
 
         if tag:
-            tags_index = tags_exploded.str.contains(tag, case=False, na=False)
+            tags_index = tags_exploded.str.match(tag, case=False, na=False)
             tags_index = tags_index[tags_index == True]
             tags_index = tags_index[~tags_index.index.duplicated(keep='first')]
             data = data[data.index.isin(tags_index.index)]
