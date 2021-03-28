@@ -716,47 +716,53 @@ def main():
             tag_height = 500
             tag_max = default_top_limit
 
+        city_top = data["city"].value_counts(ascending=True)
+        company_top = data["company"].value_counts(ascending=True)
+        title_top = data["title"].value_counts(ascending=True)
+        keywords_top = data["keywords"].explode().value_counts(ascending=True)
+        tags_top = data["tags"].explode().value_counts(ascending=True)
+        salary_fig = get_salary_fig(data)
+        currency_top = data["salary_currency"].value_counts(ascending=True)
+
         end_time = time.time()
 
         figs = [
             "Details ({:.2f}s)".format(end_time - begin_time),
             get_top_horizontal_fig(
-                data["city"].value_counts(ascending=True),
+                city_top,
                 default_top_limit,
                 {"x": "Amount", "y": "City"},
                 "City"
             ),
             get_top_horizontal_fig(
-                data["company"].value_counts(ascending=True),
+                company_top,
                 default_top_limit,
                 {"x": "Amount", "y": "Company"},
                 "Company"
             ),
             get_top_horizontal_fig(
-                data["title"].value_counts(ascending=True),
+                title_top,
                 default_top_limit,
                 {"x": "Amount", "y": "Position"},
                 "Position"
             ),
             get_top_horizontal_fig(
-                data["keywords"].explode().value_counts(ascending=True),
+                keywords_top,
                 keyword_max,
                 {"x": "Amount", "y": "Keyword"},
                 "Keyword",
                 height=keyword_height
             ),
             get_top_horizontal_fig(
-                data["tags"].explode().value_counts(ascending=True),
+                tags_top,
                 tag_max,
                 {"x": "Amount", "y": "Tag"},
                 "Tag",
                 height=tag_height
             ),
-            get_salary_fig(
-                data
-            ),
+            salary_fig,
             get_top_vertical_fig(
-                data["salary_currency"].value_counts(ascending=True),
+                currency_top,
                 {"index": "Currency", "y": "Amount"},
                 "Salary Currency",
                 width=350
@@ -800,42 +806,49 @@ def main():
             company_escaped = re.escape(company)
             data = data[data["company"].str.match(company_escaped, case=False)]
 
+        year = data["year"].value_counts(ascending=True)
+        month = data["month"].value_counts(ascending=True)
+        day = data["day"].value_counts(ascending=True)
+        week_day = data["week_day"].value_counts(ascending=True)
+        hour = data["hour"].value_counts(ascending=True)
+        minute = data["minute"].value_counts(ascending=True)
+
         end_time = time.time()
 
         figs = [
             "Timeline ({:.2f}s)".format(end_time - begin_time),
             get_top_vertical_fig(
-                data["year"].value_counts(ascending=True),
+                year,
                 {"index": "Year", "y": "Amount"},
                 "Per Year",
                 width=500
             ),
             get_top_vertical_fig(
-                data["month"].value_counts(ascending=True),
+                month,
                 {"index": "Month", "y": "Amount"},
                 "Per Month",
                 width=500
             ),
             get_top_vertical_fig(
-                data["day"].value_counts(ascending=True),
+                day,
                 {"index": "Month Day", "y": "Amount"},
                 "Per Day",
                 width=500
             ),
             get_top_vertical_fig(
-                data["week_day"].value_counts(ascending=True),
+                week_day,
                 {"index": "Week Day", "y": "Amount"},
                 "Per Week Day",
                 width=500
             ),
             get_top_vertical_fig(
-                data["hour"].value_counts(ascending=True),
+                hour,
                 {"index": "Hour", "y": "Amount"},
                 "Per Hour",
                 width=500
             ),
             get_top_vertical_fig(
-                data["minute"].value_counts(ascending=True),
+                minute,
                 {"index": "Minute", "y": "Amount"},
                 "Per Minute",
                 width=500
