@@ -795,16 +795,13 @@ def main():
         data = df
 
         if position:
-            position_escaped = re.escape(position)
-            data = data[data["title"].str.match(position_escaped, case=False)]
+            data = data[data["title"].str.match(position, case=False)]
 
         if city:
-            city_escaped = re.escape(city)
-            data = data[data["city"].str.match(city_escaped, case=False)]
+            data = data[data["city"].str.match(city, case=False)]
 
         if company:
-            company_escaped = re.escape(company)
-            data = data[data["company"].str.match(company_escaped, case=False)]
+            data = data[data["company"].str.match(company, case=False)]
 
         year = data["year"].value_counts(ascending=True)
         month = data["month"].value_counts(ascending=True)
