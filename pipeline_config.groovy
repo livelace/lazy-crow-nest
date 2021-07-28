@@ -4,7 +4,6 @@ libraries {
     }
     k8s
     kaniko {
-        context = "/"
         destination = "data/lazy-crow-nest:latest"
     }
     mattermost
