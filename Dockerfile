@@ -6,7 +6,7 @@ ENV             LCN_URL="https://github.com/livelace/lazy-crow-nest"
 # copy dataset.
 RUN             mkdir -p "/data"
 
-COPY            "/data/spark/spark/lazy-crow-nest/common.pickle" "/data/common.pickle"
+COPY            "/data/spark/lazy-crow-nest/common.pickle" "/data/common.pickle"
 
 # create user.
 RUN             useradd -m -u 1000 -s "/bin/bash" "lcn"
