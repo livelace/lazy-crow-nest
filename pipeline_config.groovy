@@ -2,6 +2,9 @@ libraries {
     git {
         repo_url = "https://github.com/livelace/lazy-crow-nest.git"
     }
+    harbor {
+        policy = "lazy-crow-nest"
+    }
     k8s_build
     kaniko {
         destination = "data/lazy-crow-nest:latest"
