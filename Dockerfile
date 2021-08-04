@@ -14,7 +14,7 @@ RUN             useradd -m -u 1000 -s "/bin/bash" "lcn"
 USER            "lcn"
 
 # install app.
-COPY            "source" "$LCN_TEMP"
+COPY            "work" "$LCN_TEMP"
 
 RUN             cd "$LCN_TEMP" && \
                 pip install --user -r "requirements.txt" && \
