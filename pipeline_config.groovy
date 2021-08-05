@@ -5,7 +5,11 @@ libraries {
     harbor {
         policy = "lazy-crow-nest"
     }
-    k8s_build
+    k8s_build {
+        volume = """
+            build1-spark-storage-shared, data/spark, ro
+        """
+    }
     kaniko {
         destination = "data/lazy-crow-nest:latest"
     }
