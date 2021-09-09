@@ -1,5 +1,9 @@
 libraries {
     dependency_check
+    dependency_track {
+        project = "lazy-crow-nest"
+        version = "latest"
+    }
     git {
         repo_url = "https://github.com/livelace/lazy-crow-nest.git"
     }
