@@ -7,8 +7,12 @@ libraries {
     git {
         repo_url = "https://github.com/livelace/lazy-crow-nest.git"
     }
-    harbor {
+    harbor_replicate {
         policy = "lazy-crow-nest"
+    }
+    harbor_scan {
+        artifact = "data/lazy-crow-nest:latest"
+        severity = "medium"
     }
     k8s_build {
         volume = """
