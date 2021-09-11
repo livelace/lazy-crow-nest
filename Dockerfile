@@ -1,7 +1,13 @@
 FROM            docker.io/python:3.9-buster
 
+ENV             DEBIAN_FRONTEND="noninteractive"
+
 ENV             LCN_TEMP="/tmp/lcn"
 ENV             LCN_URL="https://github.com/livelace/lazy-crow-nest"
+
+RUN             apt-get update --fix-missing && \
+                apt-get -y upgrade && \
+                apt-get clean all
 
 # copy dataset.
 RUN             mkdir -p "/data"
