@@ -10,10 +10,6 @@ libraries {
     harbor_replicate {
         policy = "lazy-crow-nest"
     }
-    harbor_scan {
-        artifact = "data/lazy-crow-nest:latest"
-        severity = "medium"
-    }
     k8s_build {
         volume = """
             build1-spark-storage-shared, data/spark, ro
