@@ -1,4 +1,4 @@
-FROM            docker.io/python:3.9.2-buster
+FROM            docker.io/python:3.9-alpine
 
 ENV             LCN_TEMP="/tmp/lcn"
 ENV             LCN_URL="https://github.com/livelace/lazy-crow-nest"
