@@ -9,7 +9,7 @@ RUN             mkdir -p "/data"
 COPY            "data/spark/lazy-crow-nest/common.pickle" "/data/common.pickle"
 
 # create user.
-RUN             useradd -m -u 1000 -s "/bin/bash" "lcn"
+RUN             adduser -D "lcn"
 
 USER            "lcn"
 
