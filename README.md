@@ -8,6 +8,7 @@ of job market in Russia.
 
 * 24/7 new data fetching.
 * Regular [Spark](https://spark.apache.org/) task for clean, extract, enrich data etc. Weekly [Docker](https://hub.docker.com/r/livelace/lazy-crow-nest) image.
+* Different datasets (common.pickle - all vacancies, it.pickle - information technologies vacancies).
 * Different metrics: city, title, company, salary etc.
 * Filtering by different parameters.
 
@@ -19,7 +20,7 @@ of job market in Russia.
 
 ```shell script
 # start daemon and navigate to web ui.
-user@localhost / $ docker run -ti --rm ghcr.io/livelace/lazy-crow-nest
+user@localhost / $ docker run --env "LCN_DATA_PATH=/data/it.pickle" -ti --rm "ghcr.io/livelace/lazy-crow-nest"
 Dash is running on http://0.0.0.0:8050/
 
  * Serving Flask app "lcn.__main__" (lazy loading)

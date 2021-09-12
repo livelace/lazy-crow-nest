@@ -128,11 +128,10 @@ def get_salary_fig(data, height=500, width=400):
 def main():
     # ---------------------------------------------------------------------------------
     # Load data.
-    os.environ.setdefault("DATA_PATH", "/data")
-    data_path = os.environ["DATA_PATH"]
+    os.environ.setdefault("LCN_DATA_PATH", "/data/it.pickle")
+    data_path = os.environ["LCN_DATA_PATH"]
 
-    df_file = "{}/common.pickle".format(data_path)
-    df = pd.read_pickle(df_file)
+    df = pd.read_pickle(data_path)
 
     keywords_exploded = df["keywords"].explode()
     tags_exploded = df["tags"].explode()

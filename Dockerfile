@@ -5,7 +5,8 @@ ENV             LCN_TEMP="/tmp/lcn"
 # copy dataset.
 RUN             mkdir -p "/data"
 
-COPY            "data/spark/lazy-crow-nest/common.pickle" "/data/common.pickle"
+COPY            "data/spark/lazy-crow-nest/job-hh-common-rss-elastic.pickle" "/data/common.pickle"
+COPY            "data/spark/lazy-crow-nest/job-hh-it-rss-elastic.pickle" "/data/it.pickle"
 
 # create user.
 RUN             useradd -m -u 1000 -s "/bin/bash" "lcn"
