@@ -1,6 +1,7 @@
 FROM            docker.io/python:3.9-buster
 
 ENV             LCN_TEMP="/tmp/lcn"
+ENV             PIP_CONFIG_FILE="pip.conf"
 
 # copy dataset.
 RUN             mkdir -p "/data"
