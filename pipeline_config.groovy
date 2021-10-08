@@ -30,6 +30,8 @@ libraries {
        source = "dist/lazy_crow_nest-1.0.0-py3.8.egg"
        destination = "dists-internal/${APP_NAME}/${APP_NAME}-${APP_VERSION}.egg"
     }
-    python
+    python {
+        test = false
+    }
     sonarqube
 }
