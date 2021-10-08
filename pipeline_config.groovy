@@ -17,6 +17,8 @@ libraries {
         policy = "${APP_NAME}"
     }
     k8s_build {
+        image = "harbor-core.k8s-2.livelace.ru/infra/tools:latest"
+
         volume = """
             build1-spark-storage-shared, data/spark, ro
         """
