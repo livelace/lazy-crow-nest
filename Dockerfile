@@ -18,8 +18,8 @@ USER            "lcn"
 COPY            "work" "$LCN_TEMP"
 
 RUN             cd "$LCN_TEMP" && \
-                pip install --user -r "requirements.txt" && \
-                pip install --user . && \
+                pip install --no-cache-dir --user -r "requirements.txt" && \
+                pip install --no-cache-dir --user . && \
                 rm -rf "$LCN_TEMP"
 
 WORKDIR         "/home/lcn"
