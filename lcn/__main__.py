@@ -338,7 +338,7 @@ def main():
                         id="tab1-top-lang",
                         figure=get_top_vertical_fig(
                             lang_values,
-                            {"index": "Language", "y": "Amount"},
+                            {"x": "Language", "y": "Amount"},
                             "Vacancy Language",
                             width=350
                         ),
@@ -353,7 +353,7 @@ def main():
                         id="tab1-top-salary-currency",
                         figure=get_top_vertical_fig(
                             salary_currency_values,
-                            {"index": "Currency", "y": "Amount"},
+                            {"x": "Currency", "y": "Amount"},
                             "Salary Currency",
                             width=350
                         ),
@@ -524,7 +524,7 @@ def main():
                         id="tab2-top-salary-currency",
                         figure=get_top_vertical_fig(
                             salary_currency_values,
-                            {"index": "Currency", "y": "Amount"},
+                            {"x": "Currency", "y": "Amount"},
                             "Salary Currency",
                             width=350
                         ),
@@ -558,7 +558,7 @@ def main():
                         id="tab3-timeline-year-graph",
                         figure=get_top_vertical_fig(
                             years_values,
-                            {"index": "Year", "y": "Amount"},
+                            {"x": "Year", "y": "Amount"},
                             "Per Year",
                             width=500
                         ),
@@ -568,7 +568,7 @@ def main():
                         id="tab3-timeline-month-graph",
                         figure=get_top_vertical_fig(
                             months_values,
-                            {"index": "Month", "y": "Amount"},
+                            {"x": "Month", "y": "Amount"},
                             "Per Month",
                             width=500
                         ),
@@ -578,7 +578,7 @@ def main():
                         id="tab3-timeline-day-graph",
                         figure=get_top_vertical_fig(
                             days_values,
-                            {"index": "Month Day", "y": "Amount"},
+                            {"x": "Month Day", "y": "Amount"},
                             "Per Day",
                             width=500
                         ),
@@ -590,7 +590,7 @@ def main():
                         id="tab3-timeline-weekday-graph",
                         figure=get_top_vertical_fig(
                             week_days_values,
-                            {"index": "Week Day", "y": "Amount"},
+                            {"x": "Week Day", "y": "Amount"},
                             "Per Week Day",
                             width=500
                         ),
@@ -600,7 +600,7 @@ def main():
                         id="tab3-timeline-hour-graph",
                         figure=get_top_vertical_fig(
                             hours_values,
-                            {"index": "Hour", "y": "Amount"},
+                            {"x": "Hour", "y": "Amount"},
                             "Per Hour",
                             width=500
                         ),
@@ -610,7 +610,7 @@ def main():
                         id="tab3-timeline-minute-graph",
                         figure=get_top_vertical_fig(
                             minutes_values,
-                            {"index": "Minute", "y": "Amount"},
+                            {"x": "Minute", "y": "Amount"},
                             "Per Minute",
                             width=500
                         ),
@@ -762,7 +762,7 @@ def main():
             salary_fig,
             get_top_vertical_fig(
                 currency_top,
-                {"index": "Currency", "y": "Amount"},
+                {"x": "Currency", "y": "Amount"},
                 "Salary Currency",
                 width=350
             )
@@ -815,37 +815,37 @@ def main():
             "Timeline ({:.2f}s)".format(end_time - begin_time),
             get_top_vertical_fig(
                 year,
-                {"index": "Year", "y": "Amount"},
+                {"x": "Year", "y": "Amount"},
                 "Per Year",
                 width=500
             ),
             get_top_vertical_fig(
                 month,
-                {"index": "Month", "y": "Amount"},
+                {"x": "Month", "y": "Amount"},
                 "Per Month",
                 width=500
             ),
             get_top_vertical_fig(
                 day,
-                {"index": "Month Day", "y": "Amount"},
+                {"x": "Month Day", "y": "Amount"},
                 "Per Day",
                 width=500
             ),
             get_top_vertical_fig(
                 week_day,
-                {"index": "Week Day", "y": "Amount"},
+                {"x": "Week Day", "y": "Amount"},
                 "Per Week Day",
                 width=500
             ),
             get_top_vertical_fig(
                 hour,
-                {"index": "Hour", "y": "Amount"},
+                {"x": "Hour", "y": "Amount"},
                 "Per Hour",
                 width=500
             ),
             get_top_vertical_fig(
                 minute,
-                {"index": "Minute", "y": "Amount"},
+                {"x": "Minute", "y": "Amount"},
                 "Per Minute",
                 width=500
             )
