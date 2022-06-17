@@ -8,9 +8,18 @@ of job market in Russia.
 
 * 24/7 new data fetching.
 * Regular [Spark](https://spark.apache.org/) task for clean, extract, enrich data etc. Weekly [Docker image](https://github.com/livelace/lazy-crow-nest/pkgs/container/lazy-crow-nest).
-* Different datasets (**common.pickle:** all vacancies, **it.pickle:** information technologies vacancies).
+* Different datasets (**common:** all positions, **it:** information technologies positions).
 * Different metrics: city, title, company, salary etc.
 * Filtering by different parameters.
+
+### Datasets:
+
+* common-year.pickle
+* common-six-months.pickle
+* common-three-months.pickle
+* it-year.pickle
+* it-six-months.pickle
+* it-three-months.pickle
 
 ### Dash:
 ![overview](assets/overview.png)
