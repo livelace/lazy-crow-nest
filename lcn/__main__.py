@@ -128,7 +128,7 @@ def get_salary_fig(data, height=500, width=400):
 def main():
     # ---------------------------------------------------------------------------------
     # Load data.
-    os.environ.setdefault("LCN_DATA_PATH", "/data/it.pickle")
+    os.environ.setdefault("LCN_DATA_PATH", "/data/it-three-months.pickle")
     data_path = os.environ["LCN_DATA_PATH"]
 
     df = pd.read_pickle(data_path)
