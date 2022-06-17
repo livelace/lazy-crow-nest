@@ -21,8 +21,8 @@ of job market in Russia.
 ```shell script
 # start app and navigate to web ui.
 user@localhost / $ docker run -ti --rm "ghcr.io/livelace/lazy-crow-nest"
-user@localhost / $ docker run -e "LCN_DATA_PATH=/data/common.pickle" -ti --rm "ghcr.io/livelace/lazy-crow-nest"
-user@localhost / $ docker run -e "LCN_DATA_PATH=/data/it.pickle" -ti --rm "ghcr.io/livelace/lazy-crow-nest"
+user@localhost / $ docker run -e "LCN_DATA_PATH=/data/common-year.pickle" -ti --rm "ghcr.io/livelace/lazy-crow-nest"
+user@localhost / $ docker run -e "LCN_DATA_PATH=/data/it-year.pickle" -ti --rm "ghcr.io/livelace/lazy-crow-nest"
 Dash is running on http://0.0.0.0:8050/
 
  * Serving Flask app "lcn.__main__" (lazy loading)
