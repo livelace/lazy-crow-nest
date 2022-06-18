@@ -19,7 +19,7 @@ of job market in Russia.
 * common-three-months.pickle
 * it-year.pickle
 * it-six-months.pickle
-* it-three-months.pickle
+* it-three-months.pickle (default)
 
 ### Dash:
 ![overview](assets/overview.png)
