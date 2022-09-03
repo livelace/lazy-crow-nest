@@ -7,16 +7,16 @@ ENV             PIP_CONFIG_FILE="pip.conf"
 RUN             mkdir -p "/data"
 
 # year.
-COPY            "data/spark/lazy-crow-nest/job-hh-common-rss-spool-year.pickle" "/data/common-year.pickle"
-COPY            "data/spark/lazy-crow-nest/job-hh-it-rss-spool-year.pickle" "/data/it-year.pickle"
+COPY            "data/spark/lazy-crow-nest/job-hh-common-rss-year.pickle" "/data/common-year.pickle"
+COPY            "data/spark/lazy-crow-nest/job-hh-it-rss-year.pickle" "/data/it-year.pickle"
 
 # six months.
-COPY            "data/spark/lazy-crow-nest/job-hh-common-rss-spool-six-months.pickle" "/data/common-six-months.pickle"
-COPY            "data/spark/lazy-crow-nest/job-hh-it-rss-spool-six-months.pickle" "/data/it-six-months.pickle"
+COPY            "data/spark/lazy-crow-nest/job-hh-common-rss-six-months.pickle" "/data/common-six-months.pickle"
+COPY            "data/spark/lazy-crow-nest/job-hh-it-rss-six-months.pickle" "/data/it-six-months.pickle"
 
 # three months.
-COPY            "data/spark/lazy-crow-nest/job-hh-common-rss-spool-three-months.pickle" "/data/common-three-months.pickle"
-COPY            "data/spark/lazy-crow-nest/job-hh-it-rss-spool-three-months.pickle" "/data/it-three-months.pickle"
+COPY            "data/spark/lazy-crow-nest/job-hh-common-rss-three-months.pickle" "/data/common-three-months.pickle"
+COPY            "data/spark/lazy-crow-nest/job-hh-it-rss-three-months.pickle" "/data/it-three-months.pickle"
 
 # create user.
 RUN             useradd -m -u 1000 -s "/bin/bash" "lcn"
