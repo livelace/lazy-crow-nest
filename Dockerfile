@@ -1,4 +1,4 @@
-FROM            docker.io/python:3.9-buster
+FROM            docker.io/python:3.10-buster
 
 ENV             LCN_TEMP="/tmp/lcn"
 ENV             PIP_CONFIG_FILE="pip.conf"
