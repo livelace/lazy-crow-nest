@@ -13,25 +13,25 @@ libraries {
         repo_url = "${APP_REPO}"
         repo_branch = env.VERSION
     }
-    harbor_replicate {
-        policy = "${APP_NAME}"
-    }
+    //harbor_replicate {
+    //    policy = "${APP_NAME}"
+    //}
     k8s_build {
-        image = "harbor-core.k8s-2.livelace.ru/infra/tools:latest"
+        image = "registry.livelace.ru/dev/lazy-crow-nest:latest"
 
         volume = """
-            build1-spark-storage-shared, data/spark, ro
+            worker-1-s3-lazy-crow-nest, data/lazy-crow-nest, ro
         """
     }
     kaniko {
-        destination = "data/${APP_NAME}:${IMAGE_TAG}"
+        destination = "infra/${APP_NAME}:${IMAGE_TAG}"
     }
     nexus {
        source = "dist/lazy_crow_nest-1.0.0-py3.10.egg"
-       destination = "dists-internal/${APP_NAME}/${APP_NAME}-${APP_VERSION}.egg"
+       destination = "raw/${APP_NAME}/${APP_NAME}-${APP_VERSION}.egg"
     }
     python {
         test = false
     }
-    sonarqube
+    //sonarqube
 }
