@@ -13,9 +13,9 @@ libraries {
         repo_url = "${APP_REPO}"
         repo_branch = env.VERSION
     }
-    //harbor_replicate {
-    //    policy = "${APP_NAME}"
-    //}
+    harbor_replicate {
+        policy = "${APP_NAME}"
+    }
     k8s_build {
         image = "registry.livelace.ru/dev/lazy-crow-nest:latest"
 
